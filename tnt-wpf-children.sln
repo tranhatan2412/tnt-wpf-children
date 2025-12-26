@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tnt-wpf-children", "tnt-wpf-children\tnt-wpf-children.csproj", "{AECA617C-B0C9-4D75-BC56-AA1B6A4A778B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AECA617C-B0C9-4D75-BC56-AA1B6A4A778B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AECA617C-B0C9-4D75-BC56-AA1B6A4A778B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AECA617C-B0C9-4D75-BC56-AA1B6A4A778B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AECA617C-B0C9-4D75-BC56-AA1B6A4A778B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE7D2121-A09D-4117-81E0-6A7EC951647B}
+	EndGlobalSection
+EndGlobal
