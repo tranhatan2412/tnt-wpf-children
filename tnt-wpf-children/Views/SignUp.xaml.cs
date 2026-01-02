@@ -22,6 +22,7 @@ namespace tnt_wpf_children.Views
         public SignUp()
         {
             InitializeComponent();
+            DataContext = new ViewModels.SignUpViewModel();
         }
         private void CloseSignUp_Click(object sender, RoutedEventArgs e) => Close();
 

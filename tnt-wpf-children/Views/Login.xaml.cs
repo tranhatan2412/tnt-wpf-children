@@ -22,6 +22,7 @@ namespace tnt_wpf_children.Views
         public Login()
         {
             InitializeComponent();
+            DataContext = new ViewModels.LoginViewModel();
         }
         private void CloseLogin_Click(object sender, RoutedEventArgs e) => Close();
 
