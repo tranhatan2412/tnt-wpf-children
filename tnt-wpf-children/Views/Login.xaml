@@ -42,10 +42,10 @@
                             <Setter Property="Height" Value="30"/>
                         </Style>
                     </StackPanel.Resources>
-                    <Button ToolTip="Thu nhỏ" Foreground="Gray" Click="MinimizeLogin_Click">
+                    <Button Foreground="Gray" Click="Minimize_Click">
                         <materialDesign:PackIcon Kind="WindowMinimize" />
                     </Button>
-                    <Button ToolTip="Thoát" Foreground="Red" Click="CloseLogin_Click">
+                    <Button Foreground="Red" Click="Close_Click">
                         <materialDesign:PackIcon Kind="CloseCircle" />
                     </Button>
                 </StackPanel>

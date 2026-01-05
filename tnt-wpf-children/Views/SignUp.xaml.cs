@@ -24,14 +24,14 @@ namespace tnt_wpf_children.Views
             InitializeComponent();
             DataContext = new ViewModels.SignUpViewModel();
         }
-        private void CloseSignUp_Click(object sender, RoutedEventArgs e) => Close();
+        private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
         }
-        private void MinimizeSignUp_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+        private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {

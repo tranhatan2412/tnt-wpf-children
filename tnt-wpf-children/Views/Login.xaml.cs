@@ -24,7 +24,7 @@ namespace tnt_wpf_children.Views
             InitializeComponent();
             DataContext = new ViewModels.LoginViewModel();
         }
-        private void CloseLogin_Click(object sender, RoutedEventArgs e) => Close();
+        private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -32,7 +32,7 @@ namespace tnt_wpf_children.Views
                 DragMove();
         }
 
-        private void MinimizeLogin_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+        private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
         private void SignUp_Click(object sender, RoutedEventArgs e) {
             new SignUp().Show();

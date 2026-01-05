@@ -4,10 +4,344 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:tnt_wpf_children"
-        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Height="720" Width="1080" WindowStartupLocation="CenterScreen" AllowsTransparency="True"
+        Background="Transparent" WindowStyle="None" Loaded="Window_Loaded">
+    <Window.Resources>
+        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <local:RowNumberConverter x:Key="RowNumberConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    
 
-    </Grid>
+    <Border CornerRadius="20" Background="#EFF2F7" 
+            MouseDown="Border_MouseDown" >
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Left Menu-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                
+
+                <Border Grid.Row="1" Background="#623ED0" CornerRadius="20 0 0 20">
+                    <DockPanel>
+                        
+                        
+
+                        <!--Menu Titles-->
+                        <TextBlock Text="Silvers Club" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
+                        <TextBlock Text="Members, France" Foreground="#D0BFFF" FontSize="14" FontWeight="SemiBold" DockPanel.Dock="Top" TextAlignment="Center"/>
+
+                        <!--Menu Seprator-->
+                        <Separator Margin="25" Background="#7E5FDC" DockPanel.Dock="Top" Height="0.8"/>
+
+                        <!--Menu Buttons-->
+                        <StackPanel DockPanel.Dock="Top" >
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="HomeVariant" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Dashboard"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="CalendarClock" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Events"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource menuButton}" Background="#7B5CD6" Foreground="White">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="AccountMultipleOutline" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Danh sách"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="CashMultiple" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Wallet"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ForumOutline" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Messages"/>
+                                </StackPanel>
+                            </Button>
+
+                        </StackPanel>
+
+                        <Button Style="{StaticResource menuButton}" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="15 0 15 20">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Logout"/>
+                            </StackPanel>
+                        </Button>
+
+                    </DockPanel>
+                </Border>
+
+            </Grid>
+
+            <!--Main Section-->
+            <Grid Grid.Column="1" Margin="30 20 20 20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                
+
+                <StackPanel HorizontalAlignment="Right" Margin="-10" Orientation="Horizontal" VerticalAlignment="Top">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+                            <Setter Property="Width" Value="30"/>
+                            <Setter Property="Height" Value="30"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button Foreground="Gray" Click="Minimize_Click">
+                        <materialDesign:PackIcon Kind="WindowMinimize" />
+                    </Button>
+                    <Button Foreground="Gray" Click="Maximize_Click">
+                        <materialDesign:PackIcon x:Name="MaximizeIcon" Kind="WindowMaximize" />
+                    </Button>
+                    <Button Foreground="Red" Click="Close_Click">
+                        <materialDesign:PackIcon Kind="CloseCircle" />
+                    </Button>
+                </StackPanel>
+
+                <!--Tab buttons-->
+                <TabControl Width="300" Grid.Row="0">
+                    <TabItem Header="TAB 1">
+                        <TextBlock Margin="8" Text="Default Tab 1" />
+                    </TabItem>
+                    <TabItem Header="TAB 2">
+                        <TextBlock Margin="8" Text="Default Tab 2" />
+                    </TabItem>
+                </TabControl>
+
+                <!--Page Title-->
+                <TextBlock Text="Danh sách người thân" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0" Foreground="#121518" HorizontalAlignment="Left"/>
+
+                <!--Add Button-->
+                <Button Style="{StaticResource addButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
+                        <TextBlock Text="Thêm mới"/>
+                    </StackPanel>
+                </Button>
+
+                
+
+                
+
+                <Separator Grid.Row="2" Margin="0 20 0 0" Background="#D0D0D0" Height="1"/>
+
+                <FrameworkElement x:Name="DataContextProxy" DataContext="{Binding}" />
+                <DataGrid Grid.Row="3" AlternationCount="1000000"
+                    VerticalGridLinesBrush="#D0D0D0" GridLinesVisibility="All"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    HeadersVisibility="All"
+                    EnableRowVirtualization="True" EnableColumnVirtualization="True" VirtualizingPanel.ScrollUnit="Pixel"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    ItemsSource="{Binding Items1}"
+                    SelectionUnit="{Binding ElementName=selectionUnitComboBox, Path=SelectedValue}">
+
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn
+                            Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" 
+                            CanUserResize="False">
+                            <DataGridCheckBoxColumn.Header>
+                                <Border Background="Transparent">
+                                    <CheckBox
+                                        IsChecked="{Binding DataContext.IsAllItems1Selected, Source={x:Reference DataContextProxy}}" />
+                                </Border>
+                            </DataGridCheckBoxColumn.Header>
+                            <DataGridCheckBoxColumn.HeaderStyle>
+                                <Style TargetType="{x:Type DataGridColumnHeader}" 
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">        
+                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                </Style>
+                            </DataGridCheckBoxColumn.HeaderStyle>
+                        </DataGridCheckBoxColumn>
+
+
+                        
+                        <DataGridTextColumn Header="#" Width="Auto" CanUserResize="False"
+                            CanUserSort="False" IsReadOnly="True">
+                            <DataGridTextColumn.Binding>
+                                <Binding RelativeSource="{RelativeSource AncestorType=DataGridRow}" 
+                                    Path="AlternationIndex" 
+                                    Converter="{StaticResource RowNumberConverter}" />
+                            </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+
+
+                        <DataGridTextColumn IsReadOnly="True"
+                            HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
+                            Header="Họ và tên" Width="*" Binding="{Binding FullName,
+                            UpdateSourceTrigger=PropertyChanged
+                            }" >  
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="Họ và tên" HorizontalAlignment="Center"/>
+                                        <TextBox Width="Auto" Margin="0,4,0,0"
+                                            Text="{Binding DataContext.NameFilter,
+                                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+
+
+                        <DataGridTextColumn CanUserSort="False" IsReadOnly="True"
+                                            HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
+                                            Header="Số điện thoại" Width="*"
+                                            Binding="{Binding PhoneNumber,
+                                            UpdateSourceTrigger=PropertyChanged}" >
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="Số điện thoại" HorizontalAlignment="Center"/>
+                                        <TextBox Width="Auto" Margin="0,4,0,0"
+                                            Text="{Binding DataContext.PhoneFilter, RelativeSource={RelativeSource AncestorType=DataGrid},
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+
+                        <DataGridTextColumn 
+                            HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
+                            Header="Ngày tạo" Width="*" IsReadOnly="True" Binding="{Binding CreatedAt}" > 
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="Ngày tạo" HorizontalAlignment="Center"/>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                            <DatePicker Width="Auto"
+                                                SelectedDate="{Binding DataContext.CreatedFrom,
+                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                UpdateSourceTrigger=PropertyChanged}"/>
+
+                                            <TextBlock VerticalAlignment="Center" Text="-" Margin="5,0"/>
+
+                                            <DatePicker Width="Auto"
+                                                SelectedDate="{Binding DataContext.CreatedTo,
+                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                UpdateSourceTrigger=PropertyChanged}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+
+                        <DataGridTextColumn 
+                            HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
+                            Header="Ngày cập nhật" Width="*" IsReadOnly="True" Binding="{Binding UpdatedAt}" >
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="Ngày cập nhật" HorizontalAlignment="Center"/>
+
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,4,0,0">
+                                            <DatePicker Width="Auto"
+                                                SelectedDate="{Binding DataContext.UpdatedFrom,
+                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                UpdateSourceTrigger=PropertyChanged}"/>
+
+                                            <TextBlock VerticalAlignment="Center" Text="-" Margin="5,0"/>
+
+                                            <DatePicker Width="Auto"
+                                                SelectedDate="{Binding DataContext.UpdatedTo,
+                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                UpdateSourceTrigger=PropertyChanged}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Action buttons -->
+                        <DataGridTemplateColumn Width="Auto" CanUserResize="False" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Style="{StaticResource gridEditButton}">
+                                            <materialDesign:PackIcon Kind="Pencil" Style="{StaticResource gridButtonIcon}" />
+                                        </Button>
+                                        <Button Margin="5,0,0,0" Style="{StaticResource gridRemoveButton}">
+                                            <materialDesign:PackIcon Kind="Delete" Style="{StaticResource gridButtonIcon}" />
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+
+
+                
+
+            </Grid>
+
+        </Grid>
+    </Border>
 </Window>
