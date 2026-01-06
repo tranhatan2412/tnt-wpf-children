@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using tnt_wpf_children.ViewModels;
 
 namespace tnt_wpf_children.Views
 {
@@ -23,6 +25,9 @@ namespace tnt_wpf_children.Views
         public Relative()
         {
             InitializeComponent();
+            DataContext = new RelativeViewModel();
         }
+
+        
     }
 }

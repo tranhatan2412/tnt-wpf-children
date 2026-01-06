@@ -16,7 +16,7 @@ using tnt_wpf_children.Models;
 
 namespace tnt_wpf_children.ViewModels
 {
-    public class LoginViewModel : BaseViewModel, IDataErrorInfo
+    public class LoginViewModel : BaseViewModel
     {
         private string _username;
         public string Username
@@ -69,9 +69,7 @@ namespace tnt_wpf_children.ViewModels
 
         public ICommand LoginCmd { get; }
 
-        public string Error => null;
-
-        public string this[string columnName] => string.Empty;
+        
 
         public LoginViewModel()
         {

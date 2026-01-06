@@ -24,7 +24,7 @@ namespace tnt_wpf_children.ViewModels
 
         public ObservableCollection<SelectableViewModel> Items1 { get; }
 
-        #region Select All Logic (GIỮ NGUYÊN)
+        #region Select All Logic 
 
         public bool? IsAllItems1Selected
         {
@@ -109,8 +109,27 @@ namespace tnt_wpf_children.ViewModels
         public Relatives Model { get; }
 
         // expose cho DataGrid (KHÔNG thay binding)
-        public string FullName => Model.FullName;
-        public string PhoneNumber => Model.PhoneNumber;
+        public string FullName
+        {
+            get => Model.FullName;
+            set
+            {
+                if (Model.FullName == value) return;
+                Model.FullName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string PhoneNumber
+        {
+            get => Model.PhoneNumber;
+            set
+            {
+                if (Model.PhoneNumber == value) return;
+                Model.PhoneNumber = value;
+                OnPropertyChanged();
+            }
+        }
         public DateTime CreatedAt => Model.CreatedAt;
         public DateTime UpdatedAt => Model.UpdatedAt;
 

@@ -9,8 +9,12 @@ using System.Windows.Input;
 
 namespace tnt_wpf_children.ViewModels
 {
-    public class BaseViewModel : ThreadController, INotifyPropertyChanged
+    public class BaseViewModel : ThreadController, INotifyPropertyChanged, IDataErrorInfo
     {
+        public string this[string columnName] => null;
+
+        public string Error => null;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
