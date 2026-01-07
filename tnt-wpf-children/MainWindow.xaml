@@ -125,7 +125,7 @@
                         <views:Relative/>
                     </TabItem>
                     <TabItem Header="Trẻ em">
-                        <TextBlock Margin="8" Text="Default Tab 2" />
+                        <views:Children/>
                     </TabItem>
                 </TabControl>
 

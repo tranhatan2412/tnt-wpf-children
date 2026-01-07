@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using tnt_wpf_children.Models;
 
 namespace tnt_wpf_children.ViewModels
 {
-    public class RelativeViewModel : BaseViewModel
+    public class ChildrenViewModel : BaseViewModel
     {
-        public RelativeViewModel()
+        public ChildrenViewModel()
         {
-            Items1 = new ObservableCollection<SelectableRelativeViewModel>(
-                CreateData().Select(x => new SelectableRelativeViewModel(x))
+            Items1 = new ObservableCollection<SelectableChildrenViewModel>(
+                CreateData().Select(x => new SelectableChildrenViewModel(x))
             );
 
             foreach (var item in Items1)
@@ -22,7 +24,7 @@ namespace tnt_wpf_children.ViewModels
             }
         }
 
-        public ObservableCollection<SelectableRelativeViewModel> Items1 { get; }
+        public ObservableCollection<SelectableChildrenViewModel> Items1 { get; }
 
         #region Select All Logic 
 
@@ -47,7 +49,7 @@ namespace tnt_wpf_children.ViewModels
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SelectableRelativeViewModel.IsSelected))
+            if (e.PropertyName == nameof(SelectableChildrenViewModel.IsSelected))
                 OnPropertyChanged(nameof(IsAllItems1Selected));
         }
 
@@ -55,28 +57,28 @@ namespace tnt_wpf_children.ViewModels
 
         #region Sample Data (Model layer)
 
-        private static IEnumerable<Relatives> CreateData()
+        private static IEnumerable<Children> CreateData()
         {
-            return new List<Relatives>
+            return new List<Children>
             {
-                new Relatives
+                new Children
                 {
                     FullName = "Material Design",
-                    PhoneNumber = "123-456-7890",
+                    DateOfBirth = DateTime.Now,
                     CreatedAt = DateTime.Now.AddDays(-5),
                     UpdatedAt = DateTime.Now
                 },
-                new Relatives
+                new Children
                 {
                     FullName = "Dragablz",
-                    PhoneNumber = "098-765-4321",
+                    DateOfBirth = DateTime.Now,
                     CreatedAt = DateTime.Now.AddDays(-3),
                     UpdatedAt = DateTime.Now
                 },
-                new Relatives
+                new Children
                 {
                     FullName = "Predator",
-                    PhoneNumber = "555-555-5555",
+                    DateOfBirth = DateTime.Now,
                     CreatedAt = DateTime.Now.AddDays(-1),
                     UpdatedAt = DateTime.Now
                 }
@@ -85,22 +87,24 @@ namespace tnt_wpf_children.ViewModels
 
         #endregion
 
-       
+        public IEnumerable<DataGridSelectionUnit> SelectionUnits =>
+            new[]
+            {
+                DataGridSelectionUnit.FullRow,
+                DataGridSelectionUnit.Cell,
+                DataGridSelectionUnit.CellOrRowHeader
+            };
     }
-
-    // =====================================================
-    // Row ViewModel (UI state ONLY)
-    // =====================================================
-    public class SelectableRelativeViewModel : BaseViewModel
+    public class SelectableChildrenViewModel : BaseViewModel
     {
         private bool _isSelected;
 
-        public SelectableRelativeViewModel(Relatives model)
+        public SelectableChildrenViewModel(Children model)
         {
             Model = model;
         }
 
-        public Relatives Model { get; }
+        public Children Model { get; }
 
         // expose cho DataGrid (KHÔNG thay binding)
         public string FullName
@@ -114,13 +118,13 @@ namespace tnt_wpf_children.ViewModels
             }
         }
 
-        public string PhoneNumber
+        public DateTime DateOfBirth
         {
-            get => Model.PhoneNumber;
+            get => Model.DateOfBirth;
             set
             {
-                if (Model.PhoneNumber == value) return;
-                Model.PhoneNumber = value;
+                if (Model.DateOfBirth == value) return;
+                Model.DateOfBirth = value;
                 OnPropertyChanged();
             }
         }
@@ -138,4 +142,5 @@ namespace tnt_wpf_children.ViewModels
             }
         }
     }
+
 }
