@@ -15,8 +15,12 @@ namespace tnt_wpf_children.ViewModels
         public ChildrenViewModel()
         {
             Items1 = new ObservableCollection<SelectableChildrenViewModel>(
-                CreateData().Select(x => new SelectableChildrenViewModel(x))
-            );
+        CreateData().Select(x =>
+            new SelectableChildrenViewModel(
+                x,
+                MinDateOfBirth,
+                MaxDateOfBirth))
+    );
 
             foreach (var item in Items1)
             {
@@ -94,14 +98,27 @@ namespace tnt_wpf_children.ViewModels
                 DataGridSelectionUnit.Cell,
                 DataGridSelectionUnit.CellOrRowHeader
             };
+        public DateTime MinDateOfBirth { get; } =
+    DateTime.Today.AddYears(-6);
+
+        public DateTime MaxDateOfBirth { get; } =
+            DateTime.Today.AddMonths(-3);
+
+
     }
+
     public class SelectableChildrenViewModel : BaseViewModel
     {
         private bool _isSelected;
+        public DateTime MinDateOfBirth { get; }
+        public DateTime MaxDateOfBirth { get; }
 
-        public SelectableChildrenViewModel(Children model)
+        public SelectableChildrenViewModel(Children model, DateTime minDateOfBirth,
+    DateTime maxDateOfBirth)
         {
             Model = model;
+            MinDateOfBirth = minDateOfBirth;
+            MaxDateOfBirth = maxDateOfBirth;
         }
 
         public Children Model { get; }
@@ -118,16 +135,42 @@ namespace tnt_wpf_children.ViewModels
             }
         }
 
-        public DateTime DateOfBirth
+        public DateTime? DateOfBirth
         {
             get => Model.DateOfBirth;
             set
             {
+                DateOfBirthError = null;
+
+                if (value == null)
+                {
+                    OnPropertyChanged();
+                    return;
+                }
+
+                if (value < MinDateOfBirth || value > MaxDateOfBirth)
+                {
+                    DateOfBirthError = "Tuổi trẻ không thuộc độ tuổi mầm non";
+                    OnPropertyChanged();
+                    return;
+                }
+
                 if (Model.DateOfBirth == value) return;
-                Model.DateOfBirth = value;
+                Model.DateOfBirth = value.Value;
                 OnPropertyChanged();
             }
         }
+        private string _dateOfBirthError;
+        public string DateOfBirthError
+        {
+            get => _dateOfBirthError;
+            private set
+            {
+                _dateOfBirthError = value;
+                OnPropertyChanged();
+            }
+        }
+
         public DateTime CreatedAt => Model.CreatedAt;
         public DateTime UpdatedAt => Model.UpdatedAt;
 
@@ -141,6 +184,20 @@ namespace tnt_wpf_children.ViewModels
                 OnPropertyChanged();
             }
         }
+        public string this[string columnName]
+        {
+            get
+            {
+                if (columnName == nameof(DateOfBirth))
+                {
+                    if (DateOfBirth < MinDateOfBirth || DateOfBirth > MaxDateOfBirth)
+                        return "Tuổi trẻ không hợp lệ";
+                }
+                return null;
+            }
+        }
+
+
     }
 
 }

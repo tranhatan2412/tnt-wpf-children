@@ -26,5 +26,6 @@ namespace tnt_wpf_children.Views
             InitializeComponent();
             DataContext = new ChildrenViewModel();
         }
+
     }
 }

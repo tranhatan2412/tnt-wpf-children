@@ -23,17 +23,48 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <TextBlock Text="Danh sách trẻ em" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0" Foreground="#121518" HorizontalAlignment="Left"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
+            
+            <TextBlock
+               Text="Danh sách trẻ em"
+               FontSize="32"
+               FontWeight="SemiBold"
+               Margin="0 20 0 0"
+               Foreground="#121518"/>
 
-            <Button Style="{StaticResource addButton}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0 1 8 0" Width="11" Height="11"/>
-                    <TextBlock Text="Thêm mới"/>
-                </StackPanel>
-            </Button>
+            
+            <StackPanel Grid.Column="1"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="0 20 0 0">
+
+                
+                <Button Style="{StaticResource addButton}" >
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="AccountMultiplePlus"
+                                         Width="20" Margin="0 0 5 0"
+                                         Height="20" VerticalAlignment="Center"
+                                         />
+                        <TextBlock VerticalAlignment="Center" Text="Thêm mới"/>
+                    </StackPanel>
+                </Button>
+
+               
+                <Button Style="{StaticResource gridSaveButton}"
+                Margin="8 0 0 0" Width="32" Height="32"
+                >
+                    <materialDesign:PackIcon Kind="ContentSaveEdit" Width="20" Height="20" ToolTip="Lưu thay đổi"
+                                     Style="{StaticResource gridButtonIcon}" />
+                </Button>
+
+            </StackPanel>
         </Grid>
+
 
 
 
@@ -129,6 +160,7 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                         SortMemberPath="DateOfBirth"
                         HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
                         Width="Auto">
+                    
                     <DataGridTemplateColumn.HeaderTemplate>
                         <DataTemplate>
                             <StackPanel>
@@ -158,7 +190,11 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                             <DatePicker SelectedDate="{Binding DateOfBirth, 
                                       Mode=TwoWay, 
                                       UpdateSourceTrigger=PropertyChanged,
-                                      ValidatesOnDataErrors=True}"
+                                      ValidatesOnDataErrors=True, ValidatesOnExceptions=False}"
+                                        DisplayDateStart="{Binding DataContext.MinDateOfBirth,
+                RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=OneWay}"
+            DisplayDateEnd="{Binding DataContext.MaxDateOfBirth,
+                RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=OneWay}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Stretch"
                        />
@@ -230,8 +266,8 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- Action buttons -->
-                <DataGridTemplateColumn Width="Auto" CanUserResize="False" IsReadOnly="True">
+               
+                <DataGridTemplateColumn Width="Auto " CanUserResize="False" IsReadOnly="True">
                     <DataGridTemplateColumn.HeaderStyle>
                         <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource CenterDataGridHeaderStyle}">
                             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -239,17 +275,15 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                         </Style>
                     </DataGridTemplateColumn.HeaderStyle>
                     <DataGridTemplateColumn.Header>
-                        <Button Style="{StaticResource gridRemoveButton}" ToolTip="Xóa bộ lọc">
-                            <materialDesign:PackIcon Kind="FilterRemove" Style="{StaticResource gridButtonIcon}" />
+                        <Button Width="30" Height="30" Padding="0" Style="{StaticResource gridRemoveButton}" ToolTip="Xóa bộ lọc">
+                            <materialDesign:PackIcon Width="20" Height="20" Kind="FilterRemove" Style="{StaticResource gridButtonIcon}" />
                         </Button>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Style="{StaticResource gridSaveButton}">
-                                    <materialDesign:PackIcon Kind="ContentSaveEdit" Style="{StaticResource gridButtonIcon}" />
-                                </Button>
-                                <Button Margin="5,0,0,0" Style="{StaticResource gridRemoveButton}">
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                
+                                <Button Style="{StaticResource gridRemoveButton}">
                                     <materialDesign:PackIcon Kind="Delete" Style="{StaticResource gridButtonIcon}" />
                                 </Button>
                             </StackPanel>
