@@ -16,7 +16,7 @@
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="0 20 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -34,32 +34,41 @@
                Text="Danh sách trẻ em"
                FontSize="32"
                FontWeight="SemiBold"
-               Margin="0 20 0 0"
+               
                Foreground="#121518"/>
 
             
             <StackPanel Grid.Column="1"
                 Orientation="Horizontal"
                 VerticalAlignment="Center"
-                Margin="0 20 0 0">
-
-                
-                <Button Style="{StaticResource addButton}" >
+               >
+                <Button Margin="0 0 5 0" Style="{StaticResource excelButton}" >
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="AccountMultiplePlus"
-                                         Width="20" Margin="0 0 5 0"
-                                         Height="20" VerticalAlignment="Center"
-                                         />
-                        <TextBlock VerticalAlignment="Center" Text="Thêm mới"/>
+                        <materialDesign:PackIcon Kind="FileExcel"
+          Margin="0 0 5 0"
+         Style="{StaticResource buttonIcon}"
+          />
+                        <TextBlock VerticalAlignment="Center" Text="Xuất Excel"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="0 0 5 0" Style="{StaticResource saveButton}" >
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSaveEdit"
+                         Margin="0 0 5 0"
+                        Style="{StaticResource buttonIcon}"
+                         />
+                        <TextBlock VerticalAlignment="Center" Text="Lưu"/>
                     </StackPanel>
                 </Button>
 
-               
-                <Button Style="{StaticResource gridSaveButton}"
-                Margin="8 0 0 0" Width="32" Height="32"
-                >
-                    <materialDesign:PackIcon Kind="ContentSaveEdit" Width="20" Height="20" ToolTip="Lưu thay đổi"
-                                     Style="{StaticResource gridButtonIcon}" />
+                <Button Style="{StaticResource addButton}" >
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="AccountMultiplePlus"
+                                         Margin="0 0 5 0"
+                                        Style="{StaticResource buttonIcon}"
+                                         />
+                        <TextBlock VerticalAlignment="Center" Text="Thêm mới"/>
+                    </StackPanel>
                 </Button>
 
             </StackPanel>
@@ -137,7 +146,7 @@
                             Text="{Binding DataContext.NameFilter,
                             RelativeSource={RelativeSource AncestorType=DataGrid},
                             UpdateSourceTrigger=PropertyChanged}"
-                            materialDesign:HintAssist.Hint="Nhập họ và tên"            />
+                             />
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTextColumn.HeaderTemplate>
@@ -167,7 +176,7 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                                 <TextBlock Text="Ngày sinh" HorizontalAlignment="Center"/>
                                 <TextBox Width="Auto" 
                         Margin="0,4,0,0" 
-                        materialDesign:HintAssist.Hint="Nhập năm sinh"
+                        
                         Text="{Binding DataContext.YearFilter, 
                               RelativeSource={RelativeSource AncestorType=DataGrid},
                               UpdateSourceTrigger=PropertyChanged}"/>
@@ -275,16 +284,16 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                         </Style>
                     </DataGridTemplateColumn.HeaderStyle>
                     <DataGridTemplateColumn.Header>
-                        <Button Width="30" Height="30" Padding="0" Style="{StaticResource gridRemoveButton}" ToolTip="Xóa bộ lọc">
-                            <materialDesign:PackIcon Width="20" Height="20" Kind="FilterRemove" Style="{StaticResource gridButtonIcon}" />
+                        <Button Style="{StaticResource removeButton}" ToolTip="Xóa bộ lọc">
+                            <materialDesign:PackIcon Kind="FilterRemove" Width="30" Height="30" Style="{StaticResource removeIcon}" />
                         </Button>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                                 
-                                <Button Style="{StaticResource gridRemoveButton}">
-                                    <materialDesign:PackIcon Kind="Delete" Style="{StaticResource gridButtonIcon}" />
+                                <Button Style="{StaticResource removeButton}">
+                                    <materialDesign:PackIcon Kind="Delete" Style="{StaticResource removeIcon}" />
                                 </Button>
                             </StackPanel>
                         </DataTemplate>

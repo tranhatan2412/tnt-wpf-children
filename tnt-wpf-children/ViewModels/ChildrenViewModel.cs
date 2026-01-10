@@ -85,6 +85,111 @@ namespace tnt_wpf_children.ViewModels
                     DateOfBirth = DateTime.Now,
                     CreatedAt = DateTime.Now.AddDays(-1),
                     UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Material Design",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-5),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Dragablz",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-3),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Predator",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-1),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Material Design",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-5),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Dragablz",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-3),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Predator",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-1),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Material Design",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-5),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Dragablz",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-3),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Predator",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-1),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Material Design",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-5),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Dragablz",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-3),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Predator",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-1),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Material Design",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-5),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Dragablz",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-3),
+                    UpdatedAt = DateTime.Now
+                },
+                new Children
+                {
+                    FullName = "Predator",
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now.AddDays(-1),
+                    UpdatedAt = DateTime.Now
                 }
             };
         }

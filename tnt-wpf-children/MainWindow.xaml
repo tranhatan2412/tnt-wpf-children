@@ -21,14 +21,11 @@
 
             <!--Left Menu-->
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                
 
                 
 
-                <Border Grid.Row="1" Background="#623ED0" CornerRadius="20 0 0 20">
+                <Border Background="#623ED0" CornerRadius="20 0 0 20">
                     <DockPanel>
                         
                         
@@ -45,37 +42,32 @@
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="HomeVariant" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Dashboard"/>
+                                    <TextBlock Text="Phiên gửi trẻ"/>
                                 </StackPanel>
                             </Button>
 
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="CalendarClock" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Events"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Style="{StaticResource menuButton}" Background="#7B5CD6" Foreground="White">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="AccountMultipleOutline" Style="{StaticResource menuButtonIcon}"/>
+                                    <materialDesign:PackIcon Kind="ListBoxOutline" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Danh sách"/>
                                 </StackPanel>
                             </Button>
 
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="CashMultiple" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Wallet"/>
+                                    <materialDesign:PackIcon Kind="FileWord" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Báo cáo"/>
                                 </StackPanel>
                             </Button>
 
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="ForumOutline" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Messages"/>
+                                    <materialDesign:PackIcon Kind="ChartBar" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Thống kê"/>
                                 </StackPanel>
                             </Button>
+
+                            
 
                         </StackPanel>
 
@@ -121,10 +113,22 @@
 
                 <!--Tab buttons-->
                 <TabControl HorizontalContentAlignment="Left" Margin="0 30 0 0" Width="Auto" Grid.Row="0">
-                    <TabItem Header="Người thân">
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Margin="0 0 5 0" Kind="HumanMaleChild" Style="{StaticResource buttonIcon}"/>
+                                <TextBlock Text="Người thân" FontSize="20" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </TabItem.Header>
                         <views:Relative/>
                     </TabItem>
-                    <TabItem Header="Trẻ em">
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Margin="0 0 5 0" Kind="BabyCarriage" Style="{StaticResource buttonIcon}"/>
+                                <TextBlock Text="Trẻ em" FontSize="20" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </TabItem.Header>
                         <views:Children/>
                     </TabItem>
                 </TabControl>
