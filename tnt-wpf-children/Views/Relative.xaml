@@ -23,24 +23,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-
-            <TextBlock
-       Text="Danh sách người thân"
-       FontSize="32"
-       FontWeight="SemiBold"
-       Margin="0 20 0 0"
-       Foreground="#121518"/>
-
+       
 
             <StackPanel Grid.Column="1"
-        Orientation="Horizontal"
-        VerticalAlignment="Center"
+        Orientation="Horizontal" HorizontalAlignment="Right"
         Margin="0 20 0 0">
                 <Button Margin="0 0 5 0" Style="{StaticResource excelButton}" >
                     <StackPanel Orientation="Horizontal">
@@ -70,7 +56,6 @@ Style="{StaticResource buttonIcon}"
                 </Button>
 
             </StackPanel>
-        </Grid>
 
 
 

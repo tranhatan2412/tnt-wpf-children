@@ -13,14 +13,17 @@
 
     <Border CornerRadius="20" Background="#EFF2F7" 
             MouseDown="Border_MouseDown" >
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        
+        
+        
+        
+        <DockPanel>
+           
+            
+            
 
             <!--Left Menu-->
-            <Grid>
+            <Grid Width="200" DockPanel.Dock="Left">
                 
 
                 
@@ -31,8 +34,7 @@
                         
 
                         <!--Menu Titles-->
-                        <TextBlock Text="Silvers Club" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
-                        <TextBlock Text="Members, France" Foreground="#D0BFFF" FontSize="14" FontWeight="SemiBold" DockPanel.Dock="Top" TextAlignment="Center"/>
+                        <TextBlock Text="Aeon Mall Kids" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
 
                         <!--Menu Seprator-->
                         <Separator Margin="25" Background="#7E5FDC" DockPanel.Dock="Top" Height="0.8"/>
@@ -41,15 +43,15 @@
                         <StackPanel DockPanel.Dock="Top" >
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="HomeVariant" Style="{StaticResource menuButtonIcon}"/>
+                                    <materialDesign:PackIcon Kind="BabyCarriage" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Phiên gửi trẻ"/>
                                 </StackPanel>
                             </Button>
 
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="ListBoxOutline" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Danh sách"/>
+                                    <materialDesign:PackIcon Kind="HumanMaleChild" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Người gửi trẻ"/>
                                 </StackPanel>
                             </Button>
 
@@ -83,62 +85,36 @@
 
             </Grid>
 
+            <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Right" Margin="10" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+                        <Setter Property="Width" Value="30"/>
+                        <Setter Property="Height" Value="30"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Foreground="Gray" Click="Minimize_Click">
+                    <materialDesign:PackIcon Kind="WindowMinimize" />
+                </Button>
+                <Button Foreground="Gray" Click="Maximize_Click">
+                    <materialDesign:PackIcon x:Name="MaximizeIcon" Kind="WindowMaximize" />
+                </Button>
+                <Button Foreground="Red" Click="Close_Click">
+                    <materialDesign:PackIcon Kind="CloseCircle" />
+                </Button>
+            </StackPanel>
+
             <!--Main Section-->
-            <Grid Grid.Column="1" Margin="30 20 20 20">
+            <Grid Margin="30 0 20 0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                     
                 </Grid.RowDefinitions>
 
-                
-
-                <StackPanel Panel.ZIndex="999" HorizontalAlignment="Right" Margin="-10" Orientation="Horizontal" VerticalAlignment="Top">
-                    <StackPanel.Resources>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
-                            <Setter Property="Width" Value="30"/>
-                            <Setter Property="Height" Value="30"/>
-                        </Style>
-                    </StackPanel.Resources>
-                    <Button Foreground="Gray" Click="Minimize_Click">
-                        <materialDesign:PackIcon Kind="WindowMinimize" />
-                    </Button>
-                    <Button Foreground="Gray" Click="Maximize_Click">
-                        <materialDesign:PackIcon x:Name="MaximizeIcon" Kind="WindowMaximize" />
-                    </Button>
-                    <Button Foreground="Red" Click="Close_Click">
-                        <materialDesign:PackIcon Kind="CloseCircle" />
-                    </Button>
-                </StackPanel>
-
-                <!--Tab buttons-->
-                <TabControl HorizontalContentAlignment="Left" Margin="0 30 0 0" Width="Auto" Grid.Row="0">
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Margin="0 0 5 0" Kind="HumanMaleChild" Style="{StaticResource buttonIcon}"/>
-                                <TextBlock Text="Người thân" FontSize="20" VerticalAlignment="Center" FontWeight="Bold"/>
-                            </StackPanel>
-                        </TabItem.Header>
-                        <views:Relative/>
-                    </TabItem>
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Margin="0 0 5 0" Kind="BabyCarriage" Style="{StaticResource buttonIcon}"/>
-                                <TextBlock Text="Trẻ em" FontSize="20" VerticalAlignment="Center" FontWeight="Bold"/>
-                            </StackPanel>
-                        </TabItem.Header>
-                        <views:Children/>
-                    </TabItem>
-                </TabControl>
-
-
-
-
+                <views:Relative/>
 
             </Grid>
 
-        </Grid>
+        </DockPanel>
     </Border>
 </Window>

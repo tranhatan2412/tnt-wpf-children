@@ -159,10 +159,10 @@
             </Style>
 
             <Style x:Key="removeIcon" TargetType="materialDesign:PackIcon" BasedOn="{StaticResource buttonIcon}">
-                <Setter Property="Foreground" Value="#5376e0"/>
+                <Setter Property="Foreground" Value="Red"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="#D94175"/>
+                        <Setter Property="Foreground" Value="#20a257"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>

@@ -12,9 +12,7 @@ namespace tnt_wpf_children.Data
     public class AppDbContext : DbContext
     {
         public DbSet<Relatives> Relatives { get; set; }
-        public DbSet<Children> Children { get; set; }
         public DbSet<Sessions> Sessions { get; set; }
-        public DbSet<RelativesChildren> RelativesChildren { get; set; }
         public DbSet<Admin> Admins { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -39,51 +37,25 @@ namespace tnt_wpf_children.Data
             modelBuilder.Entity<Relatives>(e =>
             {
                 e.HasKey(r => r.Id);
-
                 e.Property(r => r.FullName).IsRequired().HasMaxLength(100);
-
                 e.Property(r => r.PhoneNumber).IsRequired().HasMaxLength(10);
-
                 e.Property(r => r.Face).IsRequired();
-
                 e.Property(r => r.CreatedAt).IsRequired();
-
                 e.Property(r => r.UpdatedAt);
-
                 e.HasIndex(r => r.PhoneNumber).IsUnique();
+                e.Property(r => r.Note).HasMaxLength(255);
+                e.HasMany(r => r.Sessions).WithOne(s => s.Relative).HasForeignKey(s => s.RelativeId).OnDelete(DeleteBehavior.Cascade);
+                e.HasIndex(r => r.PhoneNumber).IsUnique();
+                e.Property(s => s.Status).IsRequired();
             });
-            modelBuilder.Entity<Children>(e =>
-            {
-                e.HasKey(c => c.Id);
-                e.Property(c => c.FullName).IsRequired().HasMaxLength(100);
-                e.Property(c => c.DateOfBirth).IsRequired();
-                e.Property(c => c.CreatedAt).IsRequired();
-                e.Property(c => c.UpdatedAt);
-            });
+            
             modelBuilder.Entity<Admin>(e =>
             {
                 e.HasKey(a => a.Username);
-
                 e.Property(a => a.Username).IsRequired().HasMaxLength(20);
-
                 e.Property(a => a.PasswordHash).IsRequired().HasMaxLength(20);
-
-                e.Property(a => a.CreatedAt).IsRequired();
             });
-            modelBuilder.Entity<RelativesChildren>(e =>
-            {
-                e.HasKey(rc => rc.Id);
-                e.HasOne(rc => rc.Relative)
-                    .WithMany(r => r.RelativesChildren)
-                    .HasForeignKey(rc => rc.RelativeId)
-                    .OnDelete(DeleteBehavior.Cascade);
-                e.HasOne(rc => rc.Child)
-                    .WithMany(c => c.RelativesChildren)
-                    .HasForeignKey(rc => rc.ChildId)
-                    .OnDelete(DeleteBehavior.Cascade);
-                e.HasIndex(rc => new { rc.RelativeId, rc.ChildId })
-                    .IsUnique();
-            });
+            
             modelBuilder.Entity<Sessions>(e =>
             {
                 e.HasKey(s => s.Id);
@@ -94,6 +66,8 @@ namespace tnt_wpf_children.Data
                     .WithMany(r => r.Sessions)
                     .HasForeignKey(s => s.RelativeId)
                     .OnDelete(DeleteBehavior.Cascade);
+                e.Property(s => s.NumberOfChildren).IsRequired();
+                e.Property(r => r.Note).HasMaxLength(255);
             });
 
             base.OnModelCreating(modelBuilder);

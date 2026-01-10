@@ -12,11 +12,13 @@ namespace tnt_wpf_children.Models
 
         public string RelativeId { get; set; }
         public Relatives Relative { get; set; }
+        public int? NumberOfChildren { get; set; }
 
         public DateTime CheckinTime { get; set; } = DateTime.UtcNow;
 
         public DateTime? CheckoutTime { get; set; }
 
+        public string? Note { get; set; }
         public bool Status { get; set; } = true;
     }
 }
