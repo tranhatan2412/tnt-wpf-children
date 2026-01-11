@@ -33,13 +33,10 @@
                         
                         
 
-                        <!--Menu Titles-->
                         <TextBlock Text="Aeon Mall Kids" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
 
-                        <!--Menu Seprator-->
                         <Separator Margin="25" Background="#7E5FDC" DockPanel.Dock="Top" Height="0.8"/>
 
-                        <!--Menu Buttons-->
                         <StackPanel DockPanel.Dock="Top" >
                             <Button Style="{StaticResource menuButton}">
                                 <StackPanel Orientation="Horizontal">

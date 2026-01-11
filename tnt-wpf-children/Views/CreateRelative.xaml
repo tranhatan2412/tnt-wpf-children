@@ -1,0 +1,171 @@
+﻿<Window x:Class="tnt_wpf_children.Views.CreateRelative"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        FontSize="18"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Width="700"
+        Height="500">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+
+    <Grid Margin="20" MouseDown="Grid_MouseDown">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ================== CỘT CAMERA ================== -->
+        <Border CornerRadius="10 0 0 10"
+                Background="#FFF5FCFF"
+                Grid.Column="0">
+
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="ĐĂNG KÝ NGƯỜI GỬI"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+
+                <!-- Camera preview -->
+                <Border Grid.Row="1"
+                        Margin="0,20"
+                        Background="#EEE"
+                        CornerRadius="8">
+                    <Image Source="{Binding CameraFrame}"
+                           Stretch="Uniform"/>
+                </Border>
+
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <Button Content="Bật camera"
+                            Margin="0,0,10,0"
+                            Command="{Binding StartCameraCommand}"
+                            Style="{StaticResource MaterialDesignPaperLightButton}"/>
+                    <Button Content="Chụp khuôn mặt"
+                            Command="{Binding CaptureFaceCmd}"
+                            Style="{StaticResource MaterialDesignPaperLightButton}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================== CỘT FORM ================== -->
+        <Border Grid.Column="1"
+                Background="#FFF5FCFF"
+                CornerRadius="0 10 10 0">
+
+            <Grid>
+                <!-- Close / Minimize -->
+                <StackPanel HorizontalAlignment="Right"
+                            Margin="0,5,5,0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Top">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource MaterialDesignIconButton}">
+                            <Setter Property="Width" Value="30"/>
+                            <Setter Property="Height" Value="30"/>
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <Button Foreground="Gray"
+                            Click="Minimize_Click">
+                        <materialDesign:PackIcon Kind="WindowMinimize"/>
+                    </Button>
+
+                    <Button Foreground="Red"
+                            Click="Close_Click">
+                        <materialDesign:PackIcon Kind="CloseCircle"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Form -->
+                <StackPanel VerticalAlignment="Center"
+                            Margin="40,0">
+
+                    <TextBox Text="{Binding FullName}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             materialDesign:HintAssist.Hint="Họ và tên"/>
+
+                    <TextBlock Text="{Binding FullNameHelper}"
+                               FontSize="11"
+                               Foreground="Red"/>
+
+                    <TextBox Margin="0,20,0,0"
+                             Text="{Binding PhoneNumber}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             materialDesign:HintAssist.Hint="Số điện thoại"/>
+
+                    <TextBlock Text="{Binding PhoneHelper}"
+                               FontSize="11"
+                               Foreground="Red"/>
+
+                    <TextBox Margin="0,20,0,0"
+                             Text="{Binding Note}"
+                             AcceptsReturn="True"
+                             Height="70"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             materialDesign:HintAssist.Hint="Ghi chú"/>
+
+                    <Button Content="Lưu"
+                            Margin="0,30,0,0"
+                            Height="45"
+                            Width="140"
+                            HorizontalAlignment="Center"
+                            Command="{Binding SaveCmd}"
+                            Style="{StaticResource MaterialDesignPaperLightButton}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================== OVERLAY ================== -->
+        <Grid Grid.ColumnSpan="2"
+              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
+              Background="#80000000"
+              IsHitTestVisible="True">
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <materialDesign:PackIcon Kind="Autorenew"
+                                         Width="48"
+                                         Height="48"
+                                         Foreground="White"
+                                         Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <RotateTransform Angle="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+
+                <materialDesign:PackIcon Kind="CheckCircle"
+                                         Width="56"
+                                         Height="56"
+                                         Foreground="#4CAF50"
+                                         Visibility="{Binding IsSuccess, Converter={StaticResource BoolToVis}}"/>
+
+                <TextBlock Text="{Binding TBStatus}"
+                           Foreground="White"
+                           Margin="0,10,0,0"
+                           FontSize="14"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>
