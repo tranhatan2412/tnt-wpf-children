@@ -34,5 +34,6 @@ namespace tnt_wpf_children.Views
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
     }
 }

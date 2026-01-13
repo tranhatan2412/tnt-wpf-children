@@ -1,34 +1,34 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Controls;
-using tnt_wpf_children.Models;
+using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
+using tnt_wpf_children.Models;
 
 namespace tnt_wpf_children.ViewModels
 {
-    public class RelativeViewModel : BaseViewModel
+    public class SessionViewModel : BaseViewModel
     {
-        public System.Windows.Input.ICommand AddRelativeCommand { get; }
-        public System.Windows.Input.ICommand RemoveFilterCommand { get; }
-        public System.Windows.Input.ICommand DeleteCommand { get; }
-        public System.Windows.Input.ICommand SaveCommand { get; }
-        public System.Windows.Input.ICommand DeleteSelectedCommand { get; }
+        public ICommand AddSessionCommand { get; }
+        public ICommand RemoveFilterCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand DeleteSelectedCommand { get; }
 
         private Data.AppDbContext _context;
-
+        
         public MaterialDesignThemes.Wpf.ISnackbarMessageQueue MessageQueue { get; }
 
-        public RelativeViewModel()
+        public SessionViewModel()
         {
             MessageQueue = new MaterialDesignThemes.Wpf.SnackbarMessageQueue(TimeSpan.FromSeconds(3));
             _context = new Data.AppDbContext();
-            // Apply Migrations
+            // Apply Migrations if needed
             try { _context.Database.Migrate(); } catch { }
 
-            AddRelativeCommand = new RelayCommand<object>(p => true, p => OpenAddRelative());
+            AddSessionCommand = new RelayCommand<object>(p => true, p => OpenAddSession());
             RemoveFilterCommand = new RelayCommand<object>(p => true, p => 
             {
                NameFilter = string.Empty;
@@ -36,44 +36,25 @@ namespace tnt_wpf_children.ViewModels
                LoadData();
             });
 
-            DeleteCommand = new RelayCommand<SelectableRelativeViewModel>(p => p != null, DeleteRelative);
+            DeleteCommand = new RelayCommand<SelectableSessionViewModel>(p => p != null, DeleteSession);
             SaveCommand = new RelayCommand<object>(p => true, p => SaveChanges());
-            DeleteSelectedCommand = new RelayCommand<object>(p => true, p => DeleteSelectedRelatives());
+            DeleteSelectedCommand = new RelayCommand<object>(p => true, p => DeleteSelectedSessions());
 
-            Items1 = new ObservableCollection<SelectableRelativeViewModel>();
+            Items = new ObservableCollection<SelectableSessionViewModel>();
             LoadData(); 
         }
 
-        private void OpenAddRelative()
+        private void OpenAddSession()
         {
-            var vm = new CreateRelativeViewModel();
-            
-            // Employee View
-            var employeeWindow = new Views.CreateRelative();
-            employeeWindow.DataContext = vm;
-
-            // We assume Customer Window is already open globally.
-            // But CreateRelativeViewModel creates a NEW CameraViewModel().
-            // If the global window uses one VM, and this uses another, they might conflict for the Device?
-            // CameraService is Singleton. 
-            // If CameraService supports multiple subscribers, we are fine.
-            // Let's create `vm` with the shared service. 
-            // However, `vm.CameraVM` is used for Capture.
-            
-            // To ensure they see the same stream, we rely on CameraService broadcasting to all subscribers.
-            // So creating a new CameraViewModel is likely fine as long as they subscribe to the same Service events.
-
-            employeeWindow.Closed += (s, e) => 
-            {
-                LoadData(); // Refresh list on close
-            };
-
-            employeeWindow.Show();
+           var vm = new CreateSessionViewModel();
+           var win = new Views.CreateSession { DataContext = vm };
+           win.Closed += (s, e) => LoadData();
+           win.ShowDialog();
         }
 
         private void LoadData()
         {
-            Items1.Clear();
+            Items.Clear();
             ExecuteLoadData();
         }
 
@@ -81,24 +62,25 @@ namespace tnt_wpf_children.ViewModels
         {
             try 
             {
-                var query = _context.Relatives.Where(r => r.Status == true);
+                // Include Relative to get Name/Phone
+                var query = _context.Sessions.Include(s => s.Relative).Where(s => s.Status == true);
 
                 if (!string.IsNullOrEmpty(NameFilter))
                 {
-                   query = query.Where(r => r.FullName.Contains(NameFilter));
+                   query = query.Where(s => s.Relative.FullName.Contains(NameFilter));
                 }
                 if (!string.IsNullOrEmpty(PhoneFilter))
                 {
-                   query = query.Where(r => r.PhoneNumber.Contains(PhoneFilter));
+                   query = query.Where(s => s.Relative.PhoneNumber.Contains(PhoneFilter));
                 }
 
-                var list = query.OrderByDescending(r => r.CreatedAt).ToList();
+                var list = query.OrderByDescending(s => s.CheckinTime).ToList();
 
                 foreach (var item in list)
                 {
-                    var vm = new SelectableRelativeViewModel(item);
+                    var vm = new SelectableSessionViewModel(item);
                     vm.PropertyChanged += Item_PropertyChanged;
-                    Items1.Add(vm);
+                    Items.Add(vm);
                 }
             }
             catch (Exception ex)
@@ -116,62 +98,60 @@ namespace tnt_wpf_children.ViewModels
             }
         }
 
-        private void DeleteRelative(SelectableRelativeViewModel vm)
+        private void DeleteSession(SelectableSessionViewModel vm)
         {
-            // If any items are selected (checked), clicking the delete button on ANY row
-            // should trigger the bulk delete for those selected items.
-            if (Items1.Any(x => x.IsSelected))
+             // Smart Delete Logic
+            if (Items.Any(x => x.IsSelected))
             {
-                DeleteSelectedRelatives();
+                DeleteSelectedSessions();
                 return;
             }
 
             if (vm == null) return;
             
-            // Soft Delete with Undo
-            var item = _context.Relatives.Find(vm.Model.Id);
+            var item = _context.Sessions.Find(vm.Model.Id);
             if (item != null)
             {
                 item.Status = false;
                 _context.SaveChanges();
-                Items1.Remove(vm);
+                Items.Remove(vm);
 
                 MessageQueue.Enqueue(
-                    $"Đã xóa '{vm.FullName}'", 
+                    $"Đã xóa phiên của '{vm.RelativeName}'", 
                     "HOÀN TÁC", 
-                    param => UndoDelete(param as SelectableRelativeViewModel), 
+                    param => UndoDelete(param as SelectableSessionViewModel), 
                     vm);
             }
         }
 
-        private void UndoDelete(SelectableRelativeViewModel vm)
+        private void UndoDelete(SelectableSessionViewModel vm)
         {
             if (vm == null) return;
-            var item = _context.Relatives.Find(vm.Model.Id);
+            var item = _context.Sessions.Find(vm.Model.Id);
             if (item != null)
             {
                 item.Status = true;
                 _context.SaveChanges();
-                LoadData(); // Reload to put it back in correct order/place
+                LoadData(); 
             }
         }
 
-        private void DeleteSelectedRelatives()
+        private void DeleteSelectedSessions()
         {
-            var selected = Items1.Where(x => x.IsSelected).ToList();
+            var selected = Items.Where(x => x.IsSelected).ToList();
             if (selected.Count == 0) return;
 
             var deletedIds = new List<string>();
 
             foreach(var item in selected)
             {
-                var dbItem = _context.Relatives.Find(item.Model.Id);
+                var dbItem = _context.Sessions.Find(item.Model.Id);
                 if (dbItem != null)
                 {
                     dbItem.Status = false;
                     deletedIds.Add(dbItem.Id);
                 }
-                Items1.Remove(item);
+                Items.Remove(item);
             }
             _context.SaveChanges();
 
@@ -188,7 +168,7 @@ namespace tnt_wpf_children.ViewModels
 
             foreach(var id in ids)
             {
-                var item = _context.Relatives.Find(id);
+                var item = _context.Sessions.Find(id);
                 if (item != null) item.Status = true;
             }
             _context.SaveChanges();
@@ -222,22 +202,22 @@ namespace tnt_wpf_children.ViewModels
             set { _phoneFilter = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<SelectableRelativeViewModel> Items1 { get; }
+        public ObservableCollection<SelectableSessionViewModel> Items { get; }
 
         #region Select All Logic 
 
-        public bool? IsAllItems1Selected
+        public bool? IsAllItemsSelected
         {
             get
             {
-                var states = Items1.Select(x => x.IsSelected).Distinct().ToList();
+                var states = Items.Select(x => x.IsSelected).Distinct().ToList();
                 return states.Count == 1 ? states[0] : (bool?)null;
             }
             set
             {
                 if (value.HasValue)
                 {
-                    foreach (var item in Items1)
+                    foreach (var item in Items)
                         item.IsSelected = value.Value;
 
                     OnPropertyChanged();
@@ -247,54 +227,51 @@ namespace tnt_wpf_children.ViewModels
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SelectableRelativeViewModel.IsSelected))
-                OnPropertyChanged(nameof(IsAllItems1Selected));
+            if (e.PropertyName == nameof(SelectableSessionViewModel.IsSelected))
+                OnPropertyChanged(nameof(IsAllItemsSelected));
         }
 
         #endregion
-
-
-       
     }
 
-    // =====================================================
-    // Row ViewModel (UI state ONLY)
-    // =====================================================
-    public class SelectableRelativeViewModel : BaseViewModel
+    public class SelectableSessionViewModel : BaseViewModel
     {
         private bool _isSelected;
 
-        public SelectableRelativeViewModel(Relatives model)
+        public SelectableSessionViewModel(Sessions model)
         {
             Model = model;
         }
 
-        public Relatives Model { get; }
+        public Sessions Model { get; }
 
-        // expose cho DataGrid (KHÔNG thay binding)
-        public string FullName
+        public string RelativeName => Model.Relative?.FullName ?? "Unknown";
+        public string RelativePhone => Model.Relative?.PhoneNumber ?? "";
+
+        public int? NumberOfChildren
         {
-            get => Model.FullName;
+            get => Model.NumberOfChildren;
             set
             {
-                if (Model.FullName == value) return;
-                Model.FullName = value;
+                if (Model.NumberOfChildren == value) return;
+                Model.NumberOfChildren = value;
                 OnPropertyChanged();
             }
         }
 
-        public string PhoneNumber
+        public DateTime CheckinTime => Model.CheckinTime;
+        
+        public DateTime? CheckoutTime
         {
-            get => Model.PhoneNumber;
+            get => Model.CheckoutTime;
             set
             {
-                if (Model.PhoneNumber == value) return;
-                Model.PhoneNumber = value;
+                if (Model.CheckoutTime == value) return;
+                Model.CheckoutTime = value;
                 OnPropertyChanged();
             }
         }
-        public DateTime CreatedAt => Model.CreatedAt;
-        public DateTime UpdatedAt => Model.UpdatedAt;
+
         public string? Note
         {
             get => Model.Note;

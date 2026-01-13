@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:views="clr-namespace:tnt_wpf_children.Views"
+        xmlns:local="clr-namespace:tnt_wpf_children"
         Style="{StaticResource MaterialDesignWindow}"
         Height="720" Width="1080" WindowStartupLocation="CenterScreen" AllowsTransparency="True"
         Background="Transparent" WindowStyle="None" Loaded="Window_Loaded">

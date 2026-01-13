@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using tnt_wpf_children.Data;
 using tnt_wpf_children.Models;
 
@@ -49,45 +50,39 @@ namespace tnt_wpf_children.ViewModels
             set { _phoneHelper = value; OnPropertyChanged(); }
         }
 
-        public enum IconState
-        {
-            None,
-            Processing,
-            Success
-        }
-
-        private IconState _icon = IconState.None;
-        public IconState Icon
-        {
-            get => _icon;
-            set
-            {
-                _icon = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsBusy));
-                OnPropertyChanged(nameof(IsProcessing));
-                OnPropertyChanged(nameof(IsSuccess));
-            }
-        }
-
-        public bool IsBusy => Icon != IconState.None;
-        public bool IsProcessing => Icon == IconState.Processing;
-        public bool IsSuccess => Icon == IconState.Success;
-
-        private string _tbStatus = "Đang xử lý...";
-        public string TBStatus
-        {
-            get => _tbStatus;
-            set { _tbStatus = value; OnPropertyChanged(); }
-        }
+        public ISnackbarMessageQueue MessageQueue { get; }
 
         public ICommand SaveCmd { get; }
         public ICommand CaptureFaceCmd { get; }
+        public ICommand OpenCustomerWindowCmd { get; }
+
+        public CameraViewModel CameraVM { get; }
 
         public CreateRelativeViewModel()
         {
+            MessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(2));
+            CameraVM = new CameraViewModel();
             SaveCmd = new RelayCommand<object>(p => true, p => Save());
             CaptureFaceCmd = new RelayCommand<object>(p => true, p => CaptureFace());
+            OpenCustomerWindowCmd = new RelayCommand<object>(p => true, p => OpenCustomerWindow());
+        }
+
+        private void OpenCustomerWindow()
+        {
+            // Check if already open
+            foreach (Window win in Application.Current.Windows)
+            {
+                if (win is Views.CustomerCameraWindow)
+                {
+                    win.WindowState = WindowState.Normal;
+                    win.Activate();
+                    return;
+                }
+            }
+
+            // If not found, open new
+            var customerWindow = new Views.CustomerCameraWindow(CameraVM);
+            customerWindow.Show();
         }
 
         private bool Validate()
@@ -122,11 +117,13 @@ namespace tnt_wpf_children.ViewModels
             return true;
         }
 
+        private float[]? _currentEmbedding;
+
         private async void Save()
         {
             if (!Validate()) return;
 
-            Icon = IconState.Processing;
+            MessageQueue.Enqueue("Đang xử lý...");
 
             try
             {
@@ -134,16 +131,18 @@ namespace tnt_wpf_children.ViewModels
                 {
                     if (db.Relatives.Any(r => r.PhoneNumber == PhoneNumber))
                     {
-                        Icon = IconState.None;
                         PhoneHelper = "Số điện thoại đã tồn tại";
+                        MessageQueue.Enqueue("Số điện thoại đã tồn tại!");
                         return;
                     }
+                    
+                    var embeddingBytes = Services.FaceRecognitionService.Instance.ComputeembeddingToBytes(_currentEmbedding);
 
                     db.Relatives.Add(new Relatives
                     {
                         FullName = FullName,
                         PhoneNumber = PhoneNumber,
-                        Face = Face,
+                        FaceEmbedding = embeddingBytes,
                         Note = Note,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
@@ -152,21 +151,68 @@ namespace tnt_wpf_children.ViewModels
                     db.SaveChanges();
                 }
 
-                await Task.Delay(1200);
-                Icon = IconState.Success;
-                TBStatus = "Tạo người gửi thành công";
+                if (CameraVM != null)
+                {
+                    // Overlay removed
+                }
+
+                MessageQueue.Enqueue("Tạo người gửi thành công!");
+                await Task.Delay(1000); // Short delay to let user see message
+                
+                if (CameraVM != null)
+                {
+                    // Overlay removed
+                }
+                
+                // Close the CreateRelative window (which is the Employee Form)
+                foreach (Window win in Application.Current.Windows)
+                {
+                    if (win.DataContext == this && win is Views.CreateRelative)
+                    {
+                        win.Close();
+                        break;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Icon = IconState.None;
+                MessageQueue.Enqueue($"Lỗi: {ex.Message}");
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void CaptureFace()
+        private async void CaptureFace()
         {
-            // TODO: gọi CameraService → lấy byte[] Face
-            // Face = camera.Capture();
+            if (CameraVM.CameraFrame is BitmapSource bitmapSource)
+            {
+                Face = GetJpgFromImageControl(bitmapSource);
+                
+                // Compute Embedding
+                await Task.Run(() => 
+                {
+                   _currentEmbedding = Services.FaceRecognitionService.Instance.GetEmbedding(bitmapSource);
+                });
+
+                if (_currentEmbedding != null)
+                {
+                     MessageQueue.Enqueue("Đã chụp ảnh & Embed thành công");
+                }
+                else
+                {
+                     MessageQueue.Enqueue("Không tìm thấy khuôn mặt!");
+                }
+            }
+        }
+
+        private byte[] GetJpgFromImageControl(BitmapSource imageC)
+        {
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imageC));
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                encoder.Save(ms);
+                return ms.ToArray();
+            }
         }
     }
 }

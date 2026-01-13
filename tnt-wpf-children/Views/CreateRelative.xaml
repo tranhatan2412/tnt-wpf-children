@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:cam="clr-namespace:tnt_wpf_children.Views"
         mc:Ignorable="d"
         FontSize="18"
         FontFamily="{DynamicResource MaterialDesignFont}"
@@ -43,21 +44,34 @@
                            HorizontalAlignment="Center"/>
 
                 <!-- Camera preview -->
-                <Border Grid.Row="1"
-                        Margin="0,20"
-                        Background="#EEE"
-                        CornerRadius="8">
-                    <Image Source="{Binding CameraFrame}"
-                           Stretch="Uniform"/>
-                </Border>
+                <Grid Grid.Row="1" Margin="0,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <ComboBox ItemsSource="{Binding CameraVM.CameraList}"
+                              SelectedItem="{Binding CameraVM.SelectedCamera}"
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                              materialDesign:HintAssist.Hint="Chọn Camera"
+                              Margin="0,0,0,10"/>
+
+                    <Border Grid.Row="1"
+                            Background="#EEE"
+                            CornerRadius="8"
+                            ClipToBounds="True">
+                        <cam:CameraPanel DataContext="{Binding CameraVM}"/>
+                    </Border>
+                </Grid>
 
                 <StackPanel Grid.Row="2"
                             Orientation="Horizontal"
                             HorizontalAlignment="Center">
-                    <Button Content="Bật camera"
+                    <Button Content="Màn hình khách"
                             Margin="0,0,10,0"
-                            Command="{Binding StartCameraCommand}"
+                            Command="{Binding OpenCustomerWindowCmd}"
                             Style="{StaticResource MaterialDesignPaperLightButton}"/>
+                    
                     <Button Content="Chụp khuôn mặt"
                             Command="{Binding CaptureFaceCmd}"
                             Style="{StaticResource MaterialDesignPaperLightButton}"/>
@@ -134,38 +148,12 @@
             </Grid>
         </Border>
 
-        <!-- ================== OVERLAY ================== -->
-        <Grid Grid.ColumnSpan="2"
-              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
-              Background="#80000000"
-              IsHitTestVisible="True">
-
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-
-                <materialDesign:PackIcon Kind="Autorenew"
-                                         Width="48"
-                                         Height="48"
-                                         Foreground="White"
-                                         Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
-                    <materialDesign:PackIcon.RenderTransform>
-                        <RotateTransform Angle="0"/>
-                    </materialDesign:PackIcon.RenderTransform>
-                </materialDesign:PackIcon>
-
-                <materialDesign:PackIcon Kind="CheckCircle"
-                                         Width="56"
-                                         Height="56"
-                                         Foreground="#4CAF50"
-                                         Visibility="{Binding IsSuccess, Converter={StaticResource BoolToVis}}"/>
-
-                <TextBlock Text="{Binding TBStatus}"
-                           Foreground="White"
-                           Margin="0,10,0,0"
-                           FontSize="14"
-                           HorizontalAlignment="Center"/>
-            </StackPanel>
-        </Grid>
+        <!-- SNACKBAR -->
+        <materialDesign:Snackbar
+            Grid.ColumnSpan="2"
+            VerticalAlignment="Bottom"
+            MessageQueue="{Binding MessageQueue}"
+            Margin="0,0,0,10"/>
 
     </Grid>
 </Window>

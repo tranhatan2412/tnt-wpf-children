@@ -22,7 +22,7 @@ namespace tnt_wpf_children
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new RelativeViewModel();
+            InitializeComponent();
 
            
             
