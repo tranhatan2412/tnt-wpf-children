@@ -39,13 +39,12 @@ namespace tnt_wpf_children.Data
                 e.HasKey(r => r.Id);
                 e.Property(r => r.FullName).IsRequired().HasMaxLength(100);
                 e.Property(r => r.PhoneNumber).IsRequired().HasMaxLength(10);
-                e.Property(r => r.Face).IsRequired();
+                e.Property(r => r.FaceEmbedding);
                 e.Property(r => r.CreatedAt).IsRequired();
                 e.Property(r => r.UpdatedAt);
                 e.HasIndex(r => r.PhoneNumber).IsUnique();
                 e.Property(r => r.Note).HasMaxLength(255);
                 e.HasMany(r => r.Sessions).WithOne(s => s.Relative).HasForeignKey(s => s.RelativeId).OnDelete(DeleteBehavior.Cascade);
-                e.HasIndex(r => r.PhoneNumber).IsUnique();
                 e.Property(s => s.Status).IsRequired();
             });
             
