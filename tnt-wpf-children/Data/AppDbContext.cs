@@ -53,6 +53,7 @@ namespace tnt_wpf_children.Data
                 e.HasKey(a => a.Username);
                 e.Property(a => a.Username).IsRequired().HasMaxLength(20);
                 e.Property(a => a.PasswordHash).IsRequired().HasMaxLength(20);
+                e.Property(a => a.Status).IsRequired();
             });
             
             modelBuilder.Entity<Sessions>(e =>
