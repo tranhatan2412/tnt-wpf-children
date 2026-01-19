@@ -18,32 +18,52 @@ namespace tnt_wpf_children.Services
 
         private FaceRecognitionService()
         {
-            // Initialize models
             _faceDetector = new FaceDetector();
             _faceLandmarksExtractor = new Face68LandmarksExtractor();
             _faceEmbedder = new FaceEmbedder();
         }
 
-        public float[]? GetEmbedding(Bitmap bitmap)
+        public float[]? GetEmbedding(BitmapSource bitmapSource)
+        {
+            using var bitmap = BitmapSourceToBitmap(bitmapSource);
+            
+            if (bitmap.Width > 800 || bitmap.Height > 800)
+            {
+                 float scale = Math.Min(800f / bitmap.Width, 800f / bitmap.Height);
+                 int newWidth = (int)(bitmap.Width * scale);
+                 int newHeight = (int)(bitmap.Height * scale);
+                 
+                 using var resized = new Bitmap(bitmap, newWidth, newHeight);
+                 return GetEmbedding(resized);
+            }
+
+            return GetEmbedding(bitmap);
+        }
+
+        private float[]? GetEmbedding(Bitmap bitmap)
         {
             try
             {
                 var originalImage = bitmap;
+                System.Diagnostics.Debug.WriteLine($"Processing Face: {originalImage.Width}x{originalImage.Height}");
                 
-                // Detect faces
                 var faces = _faceDetector.Forward(originalImage);
-                if (faces == null || faces.Length == 0) return null;
+                if (faces == null || faces.Length == 0) 
+                {
+                    System.Diagnostics.Debug.WriteLine("No faces detected");
+                    return null;
+                }
 
-                // Use the largest face
+                System.Diagnostics.Debug.WriteLine($"Faces detected: {faces.Length}");
                 var face = faces.OrderByDescending(f => f.Box.Width * f.Box.Height).First();
 
-                // Get landmarks
                 var landmarks = _faceLandmarksExtractor.Forward(originalImage, face.Box);
 
-                // Get embedding
-                // FIXME: Check FaceEmbedder.Forward signature
-                // var embedding = _faceEmbedder.Forward(originalImage, landmarks);
-                float[] embedding = new float[512]; // Placeholder to pass build
+                var cropRect = face.Box;
+                cropRect.Intersect(new Rectangle(0, 0, originalImage.Width, originalImage.Height));
+                
+                using var croppedFace = originalImage.Clone(cropRect, originalImage.PixelFormat);
+                var embedding = _faceEmbedder.Forward(croppedFace);
 
                 return embedding;
             }
@@ -54,11 +74,7 @@ namespace tnt_wpf_children.Services
             }
         }
 
-        public float[]? GetEmbedding(BitmapSource bitmapSource)
-        {
-            using var bitmap = BitmapSourceToBitmap(bitmapSource);
-            return GetEmbedding(bitmap);
-        }
+
 
         public byte[]? ComputeembeddingToBytes(float[]? embedding)
         {
@@ -84,5 +100,30 @@ namespace tnt_wpf_children.Services
             enc.Save(outStream);
             return new Bitmap(outStream);
         }
+
+        public float CompareFaces(float[] embedding1, float[] embedding2)
+        {
+            if (embedding1 == null || embedding2 == null) return 0;
+            if (embedding1.Length != embedding2.Length) return 0;
+
+            float dotProduct = 0;
+            float norm1 = 0;
+            float norm2 = 0;
+
+            for (int i = 0; i < embedding1.Length; i++)
+            {
+                dotProduct += embedding1[i] * embedding2[i];
+                norm1 += embedding1[i] * embedding1[i];
+                norm2 += embedding2[i] * embedding2[i];
+            }
+
+            if (norm1 == 0 || norm2 == 0) return 0;
+
+            return dotProduct / (float)(Math.Sqrt(norm1) * Math.Sqrt(norm2));
+        }
+
+        public const float MatchThreshold = 0.65f;
+        public bool IsFaceMatch(float[] embedding1, float[] embedding2) =>
+            CompareFaces(embedding1, embedding2) >= MatchThreshold;
     }
 }
