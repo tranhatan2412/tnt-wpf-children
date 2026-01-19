@@ -5,101 +5,96 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Tạo phiên gửi trẻ" Height="500" Width="400"
-        WindowStartupLocation="CenterScreen" WindowStyle="None"
-        AllowsTransparency="True" Background="Transparent">
+        FontSize="18"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Width="500" Height="550">
 
-    <Border CornerRadius="10" Background="White" BorderBrush="#DDDDDD" BorderThickness="1">
-        <Grid Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
 
-            <!-- Header -->
-            <TextBlock Text="TẠO PHIÊN GỬI TRẺ" FontSize="20" FontWeight="Bold" 
-                       HorizontalAlignment="Center" Foreground="{StaticResource PrimaryHueMidBrush}"/>
-
-            <Button HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Style="{StaticResource MaterialDesignIconForegroundButton}"
-                    Command="{Binding CloseCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                    Foreground="Gray">
-                <materialDesign:PackIcon Kind="Close" />
-            </Button>
-
-            <!-- Search Section -->
-            <StackPanel Grid.Row="1" Margin="0,20,0,0">
-                <TextBlock Text="Tìm người gửi" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}"
-                             materialDesign:HintAssist.Hint="Nhập tên hoặc SĐT..."
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}">
-                        <TextBox.InputBindings>
-                             <KeyBinding Key="Enter" Command="{Binding SearchRelativeCommand}"/>
-                        </TextBox.InputBindings>
-                    </TextBox>
-                    <Button Grid.Column="1" Margin="10,0,0,0"
-                            Style="{StaticResource MaterialDesignIconButton}"
-                            Command="{Binding SearchRelativeCommand}">
-                        <materialDesign:PackIcon Kind="Magnify"/>
+    <Grid Margin="20" MouseDown="Grid_MouseDown">
+        <Border Background="#FFF5FCFF" CornerRadius="10">
+            <Grid>
+                <StackPanel HorizontalAlignment="Right" Margin="0,5,5,0" Orientation="Horizontal" VerticalAlignment="Top" Panel.ZIndex="100">
+                     <StackPanel.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+                            <Setter Property="Width" Value="30"/>
+                            <Setter Property="Height" Value="30"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button Foreground="Red" Command="{Binding CloseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                        <materialDesign:PackIcon Kind="CloseCircle"/>
                     </Button>
+                </StackPanel>
+
+                <Grid Margin="40,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="TẠO PHIÊN GỬI TRẺ" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#673AB7"/>
+
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="0,20">
+                        
+                        <ComboBox IsEditable="True"
+                                  materialDesign:HintAssist.Hint="Nhập SĐT hoặc Tên để tìm kiếm..."
+                                  materialDesign:TextFieldAssist.HasClearButton="True"
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                  Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}"
+                                  ItemsSource="{Binding SearchResults}"
+                                  SelectedItem="{Binding SelectedRelative}"
+                                  IsDropDownOpen="{Binding IsSearchDropDownOpen, Mode=TwoWay}"
+                                  StaysOpenOnEdit="True"
+                                  Margin="0,0,0,25">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding FullName}" FontWeight="Bold"/>
+                                        <Run Text=" - "/>
+                                        <Run Text="{Binding PhoneNumber}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <StackPanel IsEnabled="{Binding IsRelativeSelected}">
+                             <TextBox Text="{Binding RelativeInfo, Mode=OneWay}" IsReadOnly="True"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     materialDesign:HintAssist.Hint="Người gửi đã chọn"
+                                     Margin="0,0,0,20" Foreground="Green" FontWeight="SemiBold"/>
+
+                            <TextBox Text="{Binding NumberOfChildrenText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     materialDesign:HintAssist.Hint="Số lượng trẻ"
+                                     materialDesign:TextFieldAssist.HasClearButton="False"
+                                     materialDesign:HintAssist.HelperText="{Binding NumberOfChildrenHelperText}"
+                                     Margin="0,0,0,20"/>
+
+                            <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     materialDesign:HintAssist.Hint="Ghi chú"
+                                     AcceptsReturn="True" Height="60"
+                                     Margin="0,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Grid.Row="2" Content="Tạo phiên"
+                            Height="45" Width="140"
+                            HorizontalAlignment="Center"
+                            Command="{Binding SaveCommand}"
+                            Style="{StaticResource MaterialDesignPaperLightButton}"/>
                 </Grid>
-
-                <!-- Search Results (Simple List) -->
-                <ListBox ItemsSource="{Binding SearchResults}" MaxHeight="100" Margin="0,5,0,0"
-                         SelectedItem="{Binding SelectedRelative}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock>
-                                <Run Text="{Binding FullName}" FontWeight="Bold"/>
-                                <Run Text=" - "/>
-                                <Run Text="{Binding PhoneNumber}"/>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-
-            <!-- Session Details -->
-            <StackPanel Grid.Row="2" Margin="0,20,0,0"
-                        IsEnabled="{Binding IsRelativeSelected}">
                 
-                <TextBlock Text="Thông tin phiên" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#666"/>
-                
-                <TextBox Text="{Binding RelativeInfo}" IsReadOnly="True"
-                         materialDesign:HintAssist.Hint="Người gửi đã chọn"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,15"/>
-
-                <TextBox Text="{Binding NumberOfChildren}"
-                         materialDesign:HintAssist.Hint="Số lượng trẻ"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,15"/>
-
-                <TextBox Text="{Binding Note}"
-                         materialDesign:HintAssist.Hint="Ghi chú"
-                         Height="80" VerticalContentAlignment="Top"
-                         TextWrapping="Wrap"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,15"/>
-            </StackPanel>
-
-            <!-- Actions -->
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Hủy" Style="{StaticResource MaterialDesignOutlinedButton}"
-                        Command="{Binding CloseCommand}"
-                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                         Margin="0,0,10,0"/>
-                
-                <Button Content="Tạo phiên" Style="{StaticResource MaterialDesignRaisedButton}"
-                        Command="{Binding SaveCommand}"/>
-            </StackPanel>
-
-            <materialDesign:Snackbar MessageQueue="{Binding MessageQueue}" Grid.RowSpan="4" VerticalAlignment="Bottom"/>
-        </Grid>
-    </Border>
+                <materialDesign:Snackbar MessageQueue="{Binding MessageQueue}" VerticalAlignment="Bottom" Margin="0,0,0,10" />
+            </Grid>
+        </Border>
+    </Grid>
 </Window>
