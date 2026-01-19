@@ -169,7 +169,8 @@ namespace tnt_wpf_children.ViewModels
                 Icon = IconState.None;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MessageBox.Show($"Lỗi khi đăng ký: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    var vm = new ConfirmationViewModel($"Lỗi khi đăng ký: {ex.Message}", "Lỗi", false);
+                    new Views.ConfirmationWindow { DataContext = vm }.ShowDialog();
                 });
             }
             

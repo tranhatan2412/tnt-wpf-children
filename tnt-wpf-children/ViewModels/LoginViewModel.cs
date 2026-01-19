@@ -125,7 +125,7 @@ namespace tnt_wpf_children.ViewModels
                         return;
                     }
 
-                    string hashPwd = HashPasswordShort(passwd);
+                    string hashPwd = Services.AuthService.Instance.HashPasswordShort(passwd);
 
                     if (admin.PasswordHash != hashPwd)
                     {
@@ -133,6 +133,9 @@ namespace tnt_wpf_children.ViewModels
                         PasswordHelperText = "Mật khẩu không đúng!";
                         return;
                     }
+
+                    admin.Status = true;
+                    db.SaveChanges();
                 }
 
 
@@ -150,19 +153,14 @@ namespace tnt_wpf_children.ViewModels
                 Icon = IconState.None;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MessageBox.Show($"Lỗi khi đăng ký: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var vm = new ConfirmationViewModel($"Lỗi khi đăng nhập: {ex.Message}", "Lỗi", false);
+                    new Views.ConfirmationWindow { DataContext = vm }.ShowDialog();
+                });
                 });
             }
 
-        }
-
-        private string HashPasswordShort(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            var hex = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
-
-            return hex.Substring(0, Math.Min(20, hex.Length));
         }
     }
 }
