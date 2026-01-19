@@ -26,7 +26,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ================== CỘT CAMERA ================== -->
         <Border CornerRadius="10 0 0 10"
                 Background="#FFF5FCFF"
                 Grid.Column="0">
@@ -43,7 +42,6 @@
                            FontWeight="Bold"
                            HorizontalAlignment="Center"/>
 
-                <!-- Camera preview -->
                 <Grid Grid.Row="1" Margin="0,20">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -79,13 +77,11 @@
             </Grid>
         </Border>
 
-        <!-- ================== CỘT FORM ================== -->
         <Border Grid.Column="1"
                 Background="#FFF5FCFF"
                 CornerRadius="0 10 10 0">
 
             <Grid>
-                <!-- Close / Minimize -->
                 <StackPanel HorizontalAlignment="Right"
                             Margin="0,5,5,0"
                             Orientation="Horizontal"
@@ -109,7 +105,6 @@
                     </Button>
                 </StackPanel>
 
-                <!-- Form -->
                 <StackPanel VerticalAlignment="Center"
                             Margin="40,0">
 
@@ -148,7 +143,6 @@
             </Grid>
         </Border>
 
-        <!-- SNACKBAR -->
         <materialDesign:Snackbar
             Grid.ColumnSpan="2"
             VerticalAlignment="Bottom"

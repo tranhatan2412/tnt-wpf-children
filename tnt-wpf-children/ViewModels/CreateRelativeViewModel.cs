@@ -69,7 +69,6 @@ namespace tnt_wpf_children.ViewModels
 
         private void OpenCustomerWindow()
         {
-            // Check if already open
             foreach (Window win in Application.Current.Windows)
             {
                 if (win is Views.CustomerCameraWindow)
@@ -80,7 +79,6 @@ namespace tnt_wpf_children.ViewModels
                 }
             }
 
-            // If not found, open new
             var customerWindow = new Views.CustomerCameraWindow(CameraVM);
             customerWindow.Show();
         }
@@ -109,9 +107,12 @@ namespace tnt_wpf_children.ViewModels
 
             if (Face == null)
             {
-                MessageBox.Show("Vui lòng chụp khuôn mặt", "Thiếu dữ liệu",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
+                if (Face == null)
+                {
+                    var vm = new ConfirmationViewModel("Vui lòng chụp khuôn mặt", "Thiếu dữ liệu", false);
+                    new Views.ConfirmationWindow { DataContext = vm }.ShowDialog();
+                    return false;
+                }
             }
 
             return true;
@@ -151,33 +152,24 @@ namespace tnt_wpf_children.ViewModels
                     db.SaveChanges();
                 }
 
-                if (CameraVM != null)
-                {
-                    // Overlay removed
-                }
+                
 
                 MessageQueue.Enqueue("Tạo người gửi thành công!");
-                await Task.Delay(1000); // Short delay to let user see message
+                await Task.Delay(1000); 
                 
-                if (CameraVM != null)
-                {
-                    // Overlay removed
-                }
-                
-                // Close the CreateRelative window (which is the Employee Form)
                 foreach (Window win in Application.Current.Windows)
                 {
-                    if (win.DataContext == this && win is Views.CreateRelative)
-                    {
+                    if (win is Views.CustomerCameraWindow)
                         win.Close();
-                        break;
-                    }
+                    if (win.DataContext == this && win is Views.CreateRelative)
+                        win.Close();
                 }
             }
             catch (Exception ex)
             {
                 MessageQueue.Enqueue($"Lỗi: {ex.Message}");
-                MessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                var vm = new ConfirmationViewModel(ex.Message, "Lỗi", false);
+                new Views.ConfirmationWindow { DataContext = vm }.ShowDialog();
             }
         }
 
@@ -187,20 +179,15 @@ namespace tnt_wpf_children.ViewModels
             {
                 Face = GetJpgFromImageControl(bitmapSource);
                 
-                // Compute Embedding
                 await Task.Run(() => 
                 {
                    _currentEmbedding = Services.FaceRecognitionService.Instance.GetEmbedding(bitmapSource);
                 });
 
                 if (_currentEmbedding != null)
-                {
                      MessageQueue.Enqueue("Đã chụp ảnh & Embed thành công");
-                }
                 else
-                {
                      MessageQueue.Enqueue("Không tìm thấy khuôn mặt!");
-                }
             }
         }
 
@@ -208,7 +195,7 @@ namespace tnt_wpf_children.ViewModels
         {
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(imageC));
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (System.IO.MemoryStream ms = new())
             {
                 encoder.Save(ms);
                 return ms.ToArray();

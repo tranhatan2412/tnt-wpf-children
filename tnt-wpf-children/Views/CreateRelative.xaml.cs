@@ -23,7 +23,10 @@ namespace tnt_wpf_children.Views
         public CreateRelative()
         {
             InitializeComponent();
-            DataContext = new CreateRelativeViewModel();
+            InitializeComponent();
+            var vm = new CreateRelativeViewModel();
+            DataContext = vm;
+            Loaded += (s, e) => vm.OpenCustomerWindowCmd.Execute(null);
         }
         private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
@@ -35,5 +38,13 @@ namespace tnt_wpf_children.Views
 
         private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            if (DataContext is CreateRelativeViewModel vm)
+            {
+                vm.CameraVM.Cleanup();
+            }
+        }
     }
 }
