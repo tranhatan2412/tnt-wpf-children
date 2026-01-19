@@ -185,7 +185,7 @@ namespace tnt_wpf_children.ViewModels
                 });
 
                 if (_currentEmbedding != null)
-                     MessageQueue.Enqueue("Đã chụp ảnh & Embed thành công");
+                     MessageQueue.Enqueue("Đã chụp ảnh");
                 else
                      MessageQueue.Enqueue("Không tìm thấy khuôn mặt!");
             }
