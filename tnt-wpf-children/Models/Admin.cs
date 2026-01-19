@@ -10,5 +10,6 @@ namespace tnt_wpf_children.Models
     {
         public string Username { get; set; }
         public string PasswordHash { get; set; }
+        public bool Status { get; set; } = true;
     }
 }
