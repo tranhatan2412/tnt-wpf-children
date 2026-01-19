@@ -50,7 +50,7 @@
                         
                         
 
-                        <TextBlock Text="Aeon Mall Kids" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
+                        <TextBlock Text="TNT KIDS MALL" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
 
                         <Separator Margin="25" Background="#7E5FDC" DockPanel.Dock="Top" Height="0.8"/>
 
@@ -69,12 +69,7 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button Style="{StaticResource menuButton}">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="FileWord" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Báo cáo"/>
-                                </StackPanel>
-                            </Button>
+                            
 
                             <Button Style="{StaticResource menuButton}" Command="{Binding GoToStatisticsCommand}">
                                 <StackPanel Orientation="Horizontal">
