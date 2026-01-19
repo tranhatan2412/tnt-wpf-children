@@ -22,10 +22,6 @@ namespace tnt_wpf_children
         public MainWindow()
         {
             InitializeComponent();
-            InitializeComponent();
-
-           
-            
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
@@ -57,6 +53,42 @@ namespace tnt_wpf_children
             MaxHeight = SystemParameters.WorkArea.Height;
             MaxWidth = SystemParameters.WorkArea.Width;
         }
+        private bool _isExplicitClose = false;
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            bool isLoginOpen = false;
+            foreach (Window win in Application.Current.Windows)
+            {
+                if (win.GetType().Name == "Login")
+                {
+                    isLoginOpen = true;
+                    break;
+                }
+            }
+
+            if (_isExplicitClose || isLoginOpen)
+            {
+                base.OnClosing(e);
+                if (!isLoginOpen) 
+                {
+                     Services.CameraService.Instance.StopCamera();
+                     Application.Current.Shutdown();
+                }
+                return;
+            }
+
+            e.Cancel = true;
+            var vm = new ViewModels.ConfirmationViewModel("Bạn có chắc chắn muốn thoát phần mềm?", "Xác nhận thoát");
+            var winConfirm = new Views.ConfirmationWindow { DataContext = vm, Owner = this };
+            
+            if (winConfirm.ShowDialog() == true)
+            {
+                _isExplicitClose = true;
+                Services.CameraService.Instance.StopCamera();
+                Application.Current.Shutdown();
+            }
+        }
     }
 
     public class RowNumberConverter : IValueConverter
@@ -64,15 +96,24 @@ namespace tnt_wpf_children
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is int index)
-            {
                 return index + 1;
-            }
             return 0;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
             throw new NotImplementedException();
+    }
+
+    public class NotEmptyToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string str && !string.IsNullOrWhiteSpace(str))
+                return Visibility.Visible;
+            return Visibility.Collapsed;
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+            throw new NotImplementedException();
     }
 }

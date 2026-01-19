@@ -20,20 +20,29 @@ namespace tnt_wpf_children
                 try
                 {
                     dbContext.Database.Migrate();
+                    
+                    // Kiểm tra phiên đăng nhập của Admin
+                    bool isLoggedIn = false;
+                    try
+                    {
+                        isLoggedIn = System.Linq.Enumerable.Any(dbContext.Admins, a => a.Status == true);
+                    }
+                    catch (System.Exception) { }
+
+                    if (isLoggedIn)
+                         new MainWindow().Show();
+                    else
+                         new Views.Login().Show();
                 }
                 catch (System.Exception ex)
                 {
-                    MessageBox.Show($"Lỗi khởi tạo Database: {ex.Message}");
+                    var vm = new ViewModels.ConfirmationViewModel($"Lỗi khởi tạo Database: {ex.Message}", "Lỗi", false);
+                    new Views.ConfirmationWindow { DataContext = vm }.ShowDialog();
+                    new Views.Login().Show();
                 }
             }
 
-            // Open Customer Camera Window Always
-            // We need a CameraViewModel. 
-            // Note: CameraViewModel starts camera in constructor.
-            // Ideally we share one CameraService.
-            var cameraVM = new ViewModels.CameraViewModel();
-            var customerWindow = new Views.CustomerCameraWindow(cameraVM);
-            customerWindow.Show();
+
         }
         protected override void OnExit(ExitEventArgs e)
         {
