@@ -22,5 +22,10 @@ namespace tnt_wpf_children.Models
         public bool Status { get; set; } = true;
 
         public ICollection<Sessions> Sessions { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FullName} - {PhoneNumber}";
+        }
     }
 }
