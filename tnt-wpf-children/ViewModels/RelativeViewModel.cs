@@ -3,71 +3,90 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Controls;
+using System.Windows.Input;
+using Microsoft.EntityFrameworkCore; // Fixed missing using
+using System.Windows;
 using tnt_wpf_children.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace tnt_wpf_children.ViewModels
 {
     public class RelativeViewModel : BaseViewModel
     {
-        public System.Windows.Input.ICommand AddRelativeCommand { get; }
-        public System.Windows.Input.ICommand RemoveFilterCommand { get; }
-        public System.Windows.Input.ICommand DeleteCommand { get; }
-        public System.Windows.Input.ICommand SaveCommand { get; }
-        public System.Windows.Input.ICommand DeleteSelectedCommand { get; }
+        public ICommand AddRelativeCommand { get; }
+        public ICommand RemoveFilterCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand DeleteSelectedCommand { get; }
+        public ICommand CreateSessionCommand { get; }
 
         private Data.AppDbContext _context;
-
         public MaterialDesignThemes.Wpf.ISnackbarMessageQueue MessageQueue { get; }
+        private System.Windows.Threading.DispatcherTimer _timer;
 
         public RelativeViewModel()
         {
             MessageQueue = new MaterialDesignThemes.Wpf.SnackbarMessageQueue(TimeSpan.FromSeconds(3));
             _context = new Data.AppDbContext();
-            // Apply Migrations
             try { _context.Database.Migrate(); } catch { }
+
+            // Debounce Timer
+            _timer = new System.Windows.Threading.DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(300);
+            _timer.Tick += (s, e) => 
+            {
+                _timer.Stop();
+                LoadData();
+            };
 
             AddRelativeCommand = new RelayCommand<object>(p => true, p => OpenAddRelative());
             RemoveFilterCommand = new RelayCommand<object>(p => true, p => 
             {
-               NameFilter = string.Empty;
-               PhoneFilter = string.Empty;
+               _nameFilter = string.Empty;
+               _phoneFilter = string.Empty;
+               OnPropertyChanged(nameof(NameFilter));
+               OnPropertyChanged(nameof(PhoneFilter));
                LoadData();
             });
 
             DeleteCommand = new RelayCommand<SelectableRelativeViewModel>(p => p != null, DeleteRelative);
             SaveCommand = new RelayCommand<object>(p => true, p => SaveChanges());
             DeleteSelectedCommand = new RelayCommand<object>(p => true, p => DeleteSelectedRelatives());
+            CreateSessionCommand = new RelayCommand<SelectableRelativeViewModel>(p => p != null, OpenCreateSession);
+            EditNoteCommand = new RelayCommand<SelectableRelativeViewModel>(p => p != null, EditNote);
 
             Items1 = new ObservableCollection<SelectableRelativeViewModel>();
             LoadData(); 
         }
 
+        public ICommand EditNoteCommand { get; }
+
+        private void EditNote(SelectableRelativeViewModel vm)
+        {
+            if (vm == null) return;
+
+            var noteVm = new NoteEditViewModel(vm.Note);
+            var noteWin = new Views.NoteEditWindow { DataContext = noteVm, Owner = Application.Current.MainWindow };
+
+            if (noteWin.ShowDialog() == true)
+                vm.Note = noteVm.NoteContent;
+        }
+
+        private void OpenCreateSession(SelectableRelativeViewModel vm)
+        {
+            if (vm == null) return;
+            
+            var createSessionVm = new CreateSessionViewModel(vm.Model);
+            var createSessionWindow = new Views.CreateSession();
+            createSessionWindow.DataContext = createSessionVm;
+            createSessionWindow.Show();
+        }
+
         private void OpenAddRelative()
         {
             var vm = new CreateRelativeViewModel();
-            
-            // Employee View
             var employeeWindow = new Views.CreateRelative();
             employeeWindow.DataContext = vm;
-
-            // We assume Customer Window is already open globally.
-            // But CreateRelativeViewModel creates a NEW CameraViewModel().
-            // If the global window uses one VM, and this uses another, they might conflict for the Device?
-            // CameraService is Singleton. 
-            // If CameraService supports multiple subscribers, we are fine.
-            // Let's create `vm` with the shared service. 
-            // However, `vm.CameraVM` is used for Capture.
-            
-            // To ensure they see the same stream, we rely on CameraService broadcasting to all subscribers.
-            // So creating a new CameraViewModel is likely fine as long as they subscribe to the same Service events.
-
-            employeeWindow.Closed += (s, e) => 
-            {
-                LoadData(); // Refresh list on close
-            };
-
+            employeeWindow.Closed += (s, e) => LoadData();
             employeeWindow.Show();
         }
 
@@ -84,13 +103,9 @@ namespace tnt_wpf_children.ViewModels
                 var query = _context.Relatives.Where(r => r.Status == true);
 
                 if (!string.IsNullOrEmpty(NameFilter))
-                {
                    query = query.Where(r => r.FullName.Contains(NameFilter));
-                }
                 if (!string.IsNullOrEmpty(PhoneFilter))
-                {
                    query = query.Where(r => r.PhoneNumber.Contains(PhoneFilter));
-                }
 
                 var list = query.OrderByDescending(r => r.CreatedAt).ToList();
 
@@ -107,19 +122,38 @@ namespace tnt_wpf_children.ViewModels
             }
         }
 
-        protected override void OnPropertyChanged(string propertyName = null)
+        private void RestartTimer()
         {
-            base.OnPropertyChanged(propertyName);
-            if (propertyName == nameof(NameFilter) || propertyName == nameof(PhoneFilter))
-            {
-                LoadData();
+             _timer.Stop();
+             _timer.Start();
+        }
+
+        private string _nameFilter;
+        public string NameFilter
+        {
+            get => _nameFilter;
+            set 
+            { 
+                _nameFilter = value; 
+                OnPropertyChanged();
+                RestartTimer();
+            }
+        }
+
+        private string _phoneFilter;
+        public string PhoneFilter
+        {
+            get => _phoneFilter;
+            set 
+            { 
+                _phoneFilter = value; 
+                OnPropertyChanged();
+                RestartTimer();
             }
         }
 
         private void DeleteRelative(SelectableRelativeViewModel vm)
         {
-            // If any items are selected (checked), clicking the delete button on ANY row
-            // should trigger the bulk delete for those selected items.
             if (Items1.Any(x => x.IsSelected))
             {
                 DeleteSelectedRelatives();
@@ -128,7 +162,13 @@ namespace tnt_wpf_children.ViewModels
 
             if (vm == null) return;
             
-            // Soft Delete with Undo
+            var confirmVm = new PasswordConfirmationViewModel($"Bạn có chắc chắn muốn xóa '{vm.FullName}'?");
+            var confirmWin = new Views.PasswordConfirmationWindow();
+            confirmWin.DataContext = confirmVm;
+            confirmWin.Owner = Application.Current.MainWindow;
+            
+            if (confirmWin.ShowDialog() != true) return;
+            
             var item = _context.Relatives.Find(vm.Model.Id);
             if (item != null)
             {
@@ -152,7 +192,7 @@ namespace tnt_wpf_children.ViewModels
             {
                 item.Status = true;
                 _context.SaveChanges();
-                LoadData(); // Reload to put it back in correct order/place
+                LoadData(); 
             }
         }
 
@@ -160,6 +200,13 @@ namespace tnt_wpf_children.ViewModels
         {
             var selected = Items1.Where(x => x.IsSelected).ToList();
             if (selected.Count == 0) return;
+
+            var confirmVm = new PasswordConfirmationViewModel($"Bạn có chắc chắn muốn xóa {selected.Count} dòng đã chọn?");
+            var confirmWin = new Views.PasswordConfirmationWindow();
+            confirmWin.DataContext = confirmVm;
+            confirmWin.Owner = Application.Current.MainWindow;
+            
+            if (confirmWin.ShowDialog() != true) return;
 
             var deletedIds = new List<string>();
 
@@ -197,34 +244,58 @@ namespace tnt_wpf_children.ViewModels
 
         private void SaveChanges()
         {
+            var emptyFields = new List<string>();
+            var invalidFields = new List<string>();
+            
+            foreach (var item in Items1)
+            {
+                if (string.IsNullOrWhiteSpace(item.FullName))
+                    emptyFields.Add("Họ và tên");
+                
+                if (string.IsNullOrWhiteSpace(item.PhoneNumber))
+                    emptyFields.Add("Số điện thoại");
+                
+                var nameError = (item as IDataErrorInfo)?["FullName"];
+                if (!string.IsNullOrEmpty(nameError) && !string.IsNullOrWhiteSpace(item.FullName))
+                    invalidFields.Add("Họ và tên");
+                
+                var phoneError = (item as IDataErrorInfo)?["PhoneNumber"];
+                if (!string.IsNullOrEmpty(phoneError) && !string.IsNullOrWhiteSpace(item.PhoneNumber))
+                    invalidFields.Add("Số điện thoại");
+            }
+            
+            if (emptyFields.Count > 0)
+            {
+                var uniqueFields = string.Join(", ", emptyFields.Distinct());
+                MessageQueue.Enqueue($"{uniqueFields} không được để trống");
+                return;
+            }
+            
+            if (invalidFields.Count > 0)
+            {
+                MessageQueue.Enqueue("Không thể lưu vì dữ liệu nhập vào không đúng");
+                return;
+            }
+            
             try
             {
+                var modifiedEntities = _context.ChangeTracker.Entries<Relatives>()
+                    .Where(x => x.State == EntityState.Modified)
+                    .ToList();
+
+                foreach (var entry in modifiedEntities)
+                    entry.Entity.UpdatedAt = DateTime.Now;
+
                 _context.SaveChanges();
                 MessageQueue.Enqueue("Đã lưu thay đổi!");
             }
             catch (Exception ex)
             {
-                MessageQueue.Enqueue($"Lỗi khi lưu: {ex.Message}");
+               MessageQueue.Enqueue($"Lỗi khi lưu: {ex.Message}");
             }
         }
 
-        private string _nameFilter;
-        public string NameFilter
-        {
-            get => _nameFilter;
-            set { _nameFilter = value; OnPropertyChanged(); }
-        }
-
-        private string _phoneFilter;
-        public string PhoneFilter
-        {
-            get => _phoneFilter;
-            set { _phoneFilter = value; OnPropertyChanged(); }
-        }
-
         public ObservableCollection<SelectableRelativeViewModel> Items1 { get; }
-
-        #region Select All Logic 
 
         public bool? IsAllItems1Selected
         {
@@ -239,7 +310,6 @@ namespace tnt_wpf_children.ViewModels
                 {
                     foreach (var item in Items1)
                         item.IsSelected = value.Value;
-
                     OnPropertyChanged();
                 }
             }
@@ -250,70 +320,57 @@ namespace tnt_wpf_children.ViewModels
             if (e.PropertyName == nameof(SelectableRelativeViewModel.IsSelected))
                 OnPropertyChanged(nameof(IsAllItems1Selected));
         }
-
-        #endregion
-
-
-       
     }
 
-    // =====================================================
-    // Row ViewModel (UI state ONLY)
-    // =====================================================
-    public class SelectableRelativeViewModel : BaseViewModel
+    public class SelectableRelativeViewModel : BaseViewModel, IDataErrorInfo
     {
         private bool _isSelected;
-
-        public SelectableRelativeViewModel(Relatives model)
-        {
-            Model = model;
-        }
-
+        public SelectableRelativeViewModel(Relatives model) => Model = model;
         public Relatives Model { get; }
 
-        // expose cho DataGrid (KHÔNG thay binding)
         public string FullName
         {
             get => Model.FullName;
-            set
-            {
-                if (Model.FullName == value) return;
-                Model.FullName = value;
-                OnPropertyChanged();
-            }
+            set { if (Model.FullName != value) { Model.FullName = value; OnPropertyChanged(); } }
         }
 
         public string PhoneNumber
         {
             get => Model.PhoneNumber;
-            set
-            {
-                if (Model.PhoneNumber == value) return;
-                Model.PhoneNumber = value;
-                OnPropertyChanged();
-            }
+            set { if (Model.PhoneNumber != value) { Model.PhoneNumber = value; OnPropertyChanged(); } }
         }
         public DateTime CreatedAt => Model.CreatedAt;
         public DateTime UpdatedAt => Model.UpdatedAt;
         public string? Note
         {
             get => Model.Note;
-            set
-            {
-                if (Model.Note == value) return;
-                Model.Note = value;
-                OnPropertyChanged();
-            }
+            set { if (Model.Note != value) { Model.Note = value; OnPropertyChanged(); } }
         }
 
         public bool IsSelected
         {
             get => _isSelected;
-            set
+            set { if (_isSelected != value) { _isSelected = value; OnPropertyChanged(); } }
+        }
+
+        public string Error => null;
+
+        public string this[string columnName]
+        {
+            get
             {
-                if (_isSelected == value) return;
-                _isSelected = value;
-                OnPropertyChanged();
+                if (columnName == nameof(PhoneNumber))
+                {
+                    if (!string.IsNullOrWhiteSpace(PhoneNumber) && !System.Text.RegularExpressions.Regex.IsMatch(PhoneNumber, @"^\d+$"))
+                    {
+                        return "Số điện thoại chỉ được chứa chữ số";
+                    }
+                    if (!string.IsNullOrWhiteSpace(PhoneNumber) && PhoneNumber.Length > 15)
+                    {
+                        return "Số điện thoại quá dài";
+                    }
+                }
+                return null;
             }
         }
     }

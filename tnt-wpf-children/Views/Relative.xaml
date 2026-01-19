@@ -126,7 +126,7 @@ Style="{StaticResource buttonIcon}"
                                 <TextBlock Text="Họ và tên" HorizontalAlignment="Center"/>
                                 <TextBox Width="Auto" Margin="0,4,0,0"
                             Text="{Binding DataContext.NameFilter,
-                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                            RelativeSource={RelativeSource AncestorType=UserControl},
                             UpdateSourceTrigger=PropertyChanged}"
                              />
                             </StackPanel>
@@ -152,13 +152,14 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                             Header="Số điện thoại" Width="Auto"
                             Binding="{Binding PhoneNumber, Mode=TwoWay,
                               UpdateSourceTrigger=PropertyChanged,
-                              ValidatesOnDataErrors=True}" >
+                              ValidatesOnDataErrors=True,
+                              ValidatesOnExceptions=True}" >
                     <DataGridTextColumn.HeaderTemplate>
                         <DataTemplate>
                             <StackPanel>
                                 <TextBlock Text="Số điện thoại" HorizontalAlignment="Center"/>
                                 <TextBox Width="Auto" Margin="0,4,0,0"
-                            Text="{Binding DataContext.PhoneFilter, RelativeSource={RelativeSource AncestorType=DataGrid},
+                            Text="{Binding DataContext.PhoneFilter, RelativeSource={RelativeSource AncestorType=UserControl},
                             UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </DataTemplate>
@@ -180,29 +181,6 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                 <DataGridTextColumn
             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
             Header="Ngày tạo" Width="Auto" IsReadOnly="True" Binding="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy hh:mm:ss tt}}" >
-                    <DataGridTextColumn.HeaderTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="Ngày tạo" HorizontalAlignment="Center"/>
-
-                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                    <DatePicker Width="Auto"
-                                SelectedDate="{Binding DataContext.CreatedFrom,
-                                RelativeSource={RelativeSource AncestorType=DataGrid},
-                                UpdateSourceTrigger=PropertyChanged}"/>
-
-                                    <TextBlock VerticalAlignment="Center" Text="-" Margin="5,0"/>
-
-                                    <DatePicker Width="Auto"
-                                SelectedDate="{Binding DataContext.CreatedTo,
-                                RelativeSource={RelativeSource AncestorType=DataGrid},
-                                UpdateSourceTrigger=PropertyChanged}">
-                                       
-                                    </DatePicker>
-                                </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -214,53 +192,28 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                 <DataGridTextColumn 
             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
             Header="Ngày cập nhật" Width="Auto" IsReadOnly="True" Binding="{Binding UpdatedAt, StringFormat={}{0:dd/MM/yyyy hh:mm:ss tt}}" >
-                    <DataGridTextColumn.HeaderTemplate>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTemplateColumn Header="Ghi chú" Width="200" CanUserSort="False" CanUserResize="True"
+                                        HeaderStyle="{StaticResource CenterDataGridHeaderStyle}">
+                    <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="Ngày cập nhật" HorizontalAlignment="Center"/>
-
-                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,4,0,0">
-                                    <DatePicker Width="Auto"
-                                SelectedDate="{Binding DataContext.UpdatedFrom,
-                                RelativeSource={RelativeSource AncestorType=DataGrid},
-                                UpdateSourceTrigger=PropertyChanged}"/>
-
-                                    <TextBlock VerticalAlignment="Center" Text="-" Margin="5,0"/>
-
-                                    <DatePicker Width="Auto"
-                                SelectedDate="{Binding DataContext.UpdatedTo,
-                                RelativeSource={RelativeSource AncestorType=DataGrid},
-                                UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-                            </StackPanel>
+                            <Button Background="Transparent" BorderThickness="0" Padding="5,0"
+                                    HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                    Foreground="Black" Height="40"
+                                    Command="{Binding DataContext.EditNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <TextBlock Text="{Binding Note}" TextTrimming="CharacterEllipsis" FontWeight="Normal"
+                                           VerticalAlignment="Center" ToolTip="{Binding Note}"/>
+                            </Button>
                         </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-
-                <DataGridTextColumn CanUserSort="False"
-             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
-             Header="Ghi chú" Width="Auto"
-             Binding="{Binding Note, Mode=TwoWay,
-               UpdateSourceTrigger=PropertyChanged
-               }" >
-                    
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox"
-BasedOn="{StaticResource DataGridTextBoxStyle}">
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
-
-                </DataGridTextColumn>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn Width="Auto " CanUserResize="False" IsReadOnly="True">
                     <DataGridTemplateColumn.HeaderStyle>
@@ -279,7 +232,9 @@ BasedOn="{StaticResource DataGridTextBoxStyle}">
                         <DataTemplate>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                                 <Button Background="#20a257" Style="{StaticResource addButton}" Width="24" Height="24" Margin="0,0,5,0"
-                                        ToolTip="Tạo phiên">
+                                        ToolTip="Tạo phiên"
+                                        Command="{Binding DataContext.CreateSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}">
                                     <materialDesign:PackIcon Kind="HomeGroupPlus" Style="{StaticResource buttonIcon}" Width="16" Height="16"/>
                                 </Button>
 
