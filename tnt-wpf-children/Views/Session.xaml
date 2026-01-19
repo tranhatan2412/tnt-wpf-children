@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:tnt_wpf_children"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             >
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -26,12 +26,7 @@
         <StackPanel Grid.Column="1"
         Orientation="Horizontal" HorizontalAlignment="Right"
         Margin="0 20 0 0">
-            <Button Margin="0 0 5 0" Style="{StaticResource excelButton}" >
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="FileExcel" Margin="0 0 5 0" Style="{StaticResource buttonIcon}"/>
-                    <TextBlock VerticalAlignment="Center" Text="Xuất Excel"/>
-                </StackPanel>
-            </Button>
+            
             <Button Margin="0 0 5 0" Style="{StaticResource saveButton}" Width="80" Command="{Binding SaveCommand}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ContentSaveEdit" Margin="0 0 5 0" Style="{StaticResource buttonIcon}"/>
@@ -41,8 +36,15 @@
 
             <Button Style="{StaticResource addButton}" Command="{Binding AddSessionCommand}">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="AccountMultiplePlus" Margin="0 0 5 0" Style="{StaticResource buttonIcon}"/>
-                    <TextBlock VerticalAlignment="Center" Text="Thêm mới"/>
+                    <materialDesign:PackIcon Kind="HomeGroupPlus" Margin="0 0 5 0" Style="{StaticResource buttonIcon}"/>
+                    <TextBlock VerticalAlignment="Center" Text="Tạo phiên"/>
+                </StackPanel>
+            </Button>
+            
+            <Button Margin="5 0 0 0" Style="{StaticResource addButton}" Background="#4CAF50" Command="{Binding CheckoutCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="AccountCheck" Margin="0 0 5 0" Style="{StaticResource buttonIcon}"/>
+                    <TextBlock VerticalAlignment="Center" Text="Nhận trẻ"/>
                 </StackPanel>
             </Button>
         </StackPanel>
@@ -96,7 +98,6 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- FullName (Read Only) -->
                 <DataGridTextColumn 
             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
             Header="Người gửi" Width="Auto" IsReadOnly="True" Binding="{Binding RelativeName}" >
@@ -104,9 +105,9 @@
                         <DataTemplate>
                             <StackPanel>
                                 <TextBlock Text="Người gửi" HorizontalAlignment="Center"/>
-                                <TextBox Width="Auto" Margin="0,4,0,0"
+                            <TextBox Width="Auto" Margin="0,4,0,0"
                             Text="{Binding DataContext.NameFilter,
-                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                            RelativeSource={RelativeSource AncestorType=UserControl},
                             UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </DataTemplate>
@@ -118,7 +119,6 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- PhoneNumber (Read Only) -->
                 <DataGridTextColumn CanUserSort="False"
                             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
                             Header="Số điện thoại" Width="Auto" IsReadOnly="True"
@@ -128,7 +128,7 @@
                             <StackPanel>
                                 <TextBlock Text="Số điện thoại" HorizontalAlignment="Center"/>
                                 <TextBox Width="Auto" Margin="0,4,0,0"
-                            Text="{Binding DataContext.PhoneFilter, RelativeSource={RelativeSource AncestorType=DataGrid},
+                            Text="{Binding DataContext.PhoneFilter, RelativeSource={RelativeSource AncestorType=UserControl},
                             UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </DataTemplate>
@@ -140,10 +140,9 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- CheckIn Time -->
                 <DataGridTextColumn
             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
-            Header="Check-in" Width="Auto" IsReadOnly="True" Binding="{Binding CheckinTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}}" >
+            Header="Thời gian gửi" Width="Auto" IsReadOnly="True" Binding="{Binding CheckinTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}}" >
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -152,23 +151,11 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 
-                 <!-- CheckOut Time (Editable) -->
-                <!-- Ideally use a DatePicker/TimePicker, but keeping simple text for now or read-only if managed elsewhere -->
-                <DataGridTextColumn
-            HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
-            Header="Check-out" Width="Auto" IsReadOnly="True" Binding="{Binding CheckoutTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}, TargetNullValue='-'}" >
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
+                
 
-                <!-- Number Of Children -->
                  <DataGridTextColumn
             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
-            Header="Số lượng trẻ" Width="Auto" Binding="{Binding NumberOfChildren, UpdateSourceTrigger=PropertyChanged}" >
+            Header="Số lượng trẻ" Width="Auto" Binding="{Binding NumberOfChildrenText, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnExceptions=True}" >
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -180,20 +167,21 @@
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
-                <!-- Note -->
-                <DataGridTextColumn CanUserSort="False"
-             HeaderStyle="{StaticResource CenterDataGridHeaderStyle}"
-             Header="Ghi chú" Width="*"
-             Binding="{Binding Note, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBoxStyle}"/>
-                    </DataGridTextColumn.EditingElementStyle>
-                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Ghi chú" Width="200" CanUserSort="False" CanUserResize="True"
+                                        HeaderStyle="{StaticResource CenterDataGridHeaderStyle}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Background="Transparent" BorderThickness="0" Padding="5,0"
+                                    HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                    Foreground="Black" Height="40"
+                                    Command="{Binding DataContext.EditNoteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <TextBlock Text="{Binding Note}" TextTrimming="CharacterEllipsis" FontWeight="Normal"
+                                           VerticalAlignment="Center" ToolTip="{Binding Note}"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn Width="Auto" CanUserResize="False" IsReadOnly="True">
                     <DataGridTemplateColumn.HeaderStyle>
@@ -211,6 +199,13 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                <Button Background="#2196F3" Style="{StaticResource addButton}" Width="24" Height="24"
+                                        ToolTip="In hóa đơn" Margin="0,0,5,0"
+                                        Command="{Binding DataContext.PrintReceiptCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}">
+                                    <materialDesign:PackIcon Kind="Printer" Style="{StaticResource buttonIcon}" Width="16" Height="16"/>
+                                </Button>
+                                
                                 <Button Background="#cc0f22" Style="{StaticResource addButton}" Width="24" Height="24"
                                         ToolTip="Xóa"
                                         Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
